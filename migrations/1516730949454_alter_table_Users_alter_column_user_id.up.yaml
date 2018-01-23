@@ -1,9 +1,0 @@
-- args:
-    sql: ALTER TABLE "Users" ALTER COLUMN "user_id" TYPE serial;
-  type: run_sql
-- args:
-    sql: ALTER TABLE "Users" ALTER COLUMN "user_id" DROP DEFAULT;
-  type: run_sql
-- args:
-    sql: ALTER TABLE "Users" ALTER COLUMN "user_id" SET NOT NULL;
-  type: run_sql
