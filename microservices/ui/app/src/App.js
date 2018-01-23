@@ -70,7 +70,41 @@ class App extends Component{
             this.error(1);
         }
         else{
-            //---// save data
+            var fetchAction =  require('node-fetch');
+            var url = "https://data.bathtub62.hasura-app.io/v1/query";
+            var requestOptions = {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            };
+            var body = {
+                "type": "insert",
+                "args": {
+                    "table": "Users",
+                    "objects": [
+                        {
+                            "user_owes": "0",
+                            "user_owed": "0",
+                            "username": newUser.username,
+                            "email": newUser.email,
+                            "password": newUser.password,
+                            "total_balance": "0"
+                        }
+                    ]
+                }
+            };
+            requestOptions.body = JSON.stringify(body);
+            fetchAction(url, requestOptions)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                console.log(result);
+            })
+            .catch(function(error) {
+                console.log('Request Failed:' + error);
+            });
             console.log('saved new-user credentials');
             //goto login page (values are already copied)
             this.setState({signupLogin: 1});   
@@ -79,25 +113,72 @@ class App extends Component{
 
     login = (authUser) => {        
         console.log(authUser);
-        //error : 1 wrong email format
-        //---// authenticate user set this.state.auth : true
-        if((authUser.email === this.demo.email) && (authUser.password === this.demo.password)){
-            this.state.auth = true;
-            this.user.username = this.demo.username;
-        }
-        else{
-            //error : 2 wrong username/password
-            //this.setState({err: 2}); not working why?
-            //console.log("error in app.js - "+this.state.err);
-            this.error(2);
-        }
-        if(this.state.auth){
-            console.log('authenticated user');
-            this.setState({logged: true});
-            //get user name and other data and populate the 'this.user'    
-            //page 2
-            //this.setState({page: 2});   
-        }
+        var fetchAction =  require('node-fetch');
+        var url = "https://data.bathtub62.hasura-app.io/v1/query";
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
+        var that = this;
+        var tmpUserName = "";
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
+            }
+        };
+        var body = {
+            "type": "bulk",
+            "args": [
+                {
+                    "type": "select",
+                    "args": {
+                        "table": "Users",
+                        "columns": [
+                            "username"
+                        ],
+                        "where": {
+                            "email": {
+                                "$like": authUser.username
+                            },
+                            "password": {
+                                "$like": authUser.password
+                            },
+                        }
+                    }
+                }
+            ]
+        };
+        requestOptions.body = JSON.stringify(body);
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            console.log(result[0][0].username);
+            tmpUserName = result[0][0].username;
+            //that.user.username = result[0][0].username;
+            //console.log(that.user.username);
+            //that.setState({auth: true});
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+            that.error(2);
+        });
+        
+        setTimeout(function(){
+            if(tmpUserName){
+                that.state.auth = true;
+                that.user.username = tmpUserName;
+                console.log('authenticated user');
+                that.setState({logged: true});
+            }
+            else{
+                that.error(2);
+            }
+        }, 5000);
+        
+        //this.setState({page: 2});   
     };
     logout(){       this.setState({logged: false, signupLogin: 1});     };
 
