@@ -12,7 +12,7 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        this.state =    { page:1 , signupLogin: 0, logged: true, err: 0, errorOpen: false};
+        this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
         this.user  =    { username: '', avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
@@ -110,6 +110,12 @@ class App extends Component{
     addGroup = (groupName, groupMembers) => {
         console.log(groupName);
         console.log(groupMembers);
+        if(groupMembers.length <= 0){
+            this.error(4);
+        }
+        else{
+            
+        }
     };
     
     render(){
@@ -160,6 +166,19 @@ class App extends Component{
                                 open={this.state.errorOpen}
                                 message="All fields are required"
                                 action="Try Again"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+
+                        {(this.state.err===4)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Group discarded because of zero friends"
+                                action="ok"
                                 autoHideDuration={5000}
                                 onActionClick={this.handleError1Click.bind(this)}
                                 onRequestClose={this.handleErrorRequestClose.bind(this)}

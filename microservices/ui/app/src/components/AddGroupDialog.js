@@ -43,7 +43,10 @@ class AddGroupDialog extends Component{
 		this.groupName = this.state.groupName;
 		this.groupMembers = this.state.selectedFriends;
 		if(this.groupMembers.length <= 0){
-			alert("You need to select atlest one friend");
+			//console.log("You need to select atlest one friend");
+			this.setState({modalOpen: false});
+	    	this.props.addGroup(this.groupName,this.groupMembers);
+	    	this.state.selectedFriends=[];
 		}
 		else{
 	    	this.setState({modalOpen: false});

@@ -32,7 +32,7 @@ class CurrentUser extends Component{
             <span>
             {this.props.logged
              ? <span>
-                    <FlatButton style={{'marginLeft':'100px'}} target="_blank" onClick={this.popover}
+                    <FlatButton style={{'marginLeft':'70px'}} target="_blank" onClick={this.popover}
                         label={ <span style={{color: muiTheme.palette.primaryTextColor}}>{this.props.username}&nbsp;
                                 <i style={{verticalAlign:'middle'}} className="material-icons">arrow_drop_down</i>
                             </span>}
