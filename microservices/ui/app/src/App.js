@@ -16,6 +16,7 @@ class App extends Component{
         // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
         // headers = { "Authorization" : "Bearer " + authToken }
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
+        //cookie.load("onboarded")
         this.user  =    { username: '', avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
@@ -34,6 +35,17 @@ class App extends Component{
         this.demo =     { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
 
         this.error.bind(this);
+        this.setCookie.bind(this);
+        this.getCookie.bind(this);
+    }
+    componentWillMount(){
+		var userCookie   = this.getCookie("username");
+		var loggedCookie = this.getCookie("user_logged");
+		if(loggedCookie){
+			this.setState({logged:true});
+			//that.state.auth = true;
+	        this.user.username = userCookie;
+		}
     }
     //0 : Signup
     //0 : no error, 1 : wrong email format (client side), 2 : wrong email/password, 3 : empty textfields
@@ -52,7 +64,7 @@ class App extends Component{
     error = (val) => {
         this.setState({ errorOpen: true});
         this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
-    }
+    };
     
     handleError1Click = () => {
         this.setState({errorOpen: false});
@@ -161,7 +173,10 @@ class App extends Component{
 	        that.state.auth = true;
 	        that.user.username = result[0][0].username;
 	        console.log('authenticated user');
+	        that.setCookie("username",that.user.username,1);
+	        that.setCookie("user_logged",true,1);
 	        that.setState({logged: true});
+	        //cookie.save("user_logged", true, {path: "/"});
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
@@ -169,7 +184,11 @@ class App extends Component{
         });
         //this.setState({page: 2});   
     };
-    logout(){       this.setState({logged: false, signupLogin: 1});     };
+    logout(){
+    	this.setCookie("username","",0);
+    	this.setCookie("user_logged",false,0);
+    	this.setState({logged: false, signupLogin: 1});     
+    };
 
     addBill = (billDetails) => {
         console.log(billDetails);
@@ -187,7 +206,28 @@ class App extends Component{
             
         }
     };
-    
+
+    setCookie = (cname, cvalue, exdays) => {
+	    var d = new Date();
+	    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	    var expires = "expires="+d.toUTCString();
+	    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	};
+	getCookie = (cname) => {
+	    var name = cname + "=";
+	    var ca = document.cookie.split(';');
+	    for(var i = 0; i < ca.length; i++) {
+	        var c = ca[i];
+	        while (c.charAt(0) == ' ') {
+	            c = c.substring(1);
+	        }
+	        if (c.indexOf(name) == 0) {
+	            return c.substring(name.length, c.length);
+	        }
+	    }
+	    return "";
+	};
+
     render(){
         return(
             <div className="App">
