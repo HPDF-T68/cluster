@@ -12,7 +12,11 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
+        //cookie.load("onboarded")
         this.user  =    { username: '', avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
@@ -31,6 +35,17 @@ class App extends Component{
         this.demo =     { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
 
         this.error.bind(this);
+        this.setCookie.bind(this);
+        this.getCookie.bind(this);
+    }
+    componentWillMount(){
+		var userCookie   = this.getCookie("username");
+		var loggedCookie = this.getCookie("user_logged");
+		if(loggedCookie){
+			this.setState({logged:true});
+			//that.state.auth = true;
+	        this.user.username = userCookie;
+		}
     }
     //0 : Signup
     //0 : no error, 1 : wrong email format (client side), 2 : wrong email/password, 3 : empty textfields
@@ -49,7 +64,7 @@ class App extends Component{
     error = (val) => {
         this.setState({ errorOpen: true});
         this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
-    }
+    };
     
     handleError1Click = () => {
         this.setState({errorOpen: false});
@@ -70,7 +85,41 @@ class App extends Component{
             this.error(1);
         }
         else{
-            //---// save data
+            var fetchAction =  require('node-fetch');
+            var url = "https://data.bathtub62.hasura-app.io/v1/query";
+            var requestOptions = {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            };
+            var body = {
+                "type": "insert",
+                "args": {
+                    "table": "Users",
+                    "objects": [
+                        {
+                            "user_owes": "0",
+                            "user_owed": "0",
+                            "username": newUser.username,
+                            "email": newUser.email,
+                            "password": newUser.password,
+                            "total_balance": "0"
+                        }
+                    ]
+                }
+            };
+            requestOptions.body = JSON.stringify(body);
+            fetchAction(url, requestOptions)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                console.log(result);
+            })
+            .catch(function(error) {
+                console.log('Request Failed:' + error);
+            });
             console.log('saved new-user credentials');
             //goto login page (values are already copied)
             this.setState({signupLogin: 1});   
@@ -79,27 +128,67 @@ class App extends Component{
 
     login = (authUser) => {        
         console.log(authUser);
-        //error : 1 wrong email format
-        //---// authenticate user set this.state.auth : true
-        if((authUser.email === this.demo.email) && (authUser.password === this.demo.password)){
-            this.state.auth = true;
-            this.user.username = this.demo.username;
-        }
-        else{
-            //error : 2 wrong username/password
-            //this.setState({err: 2}); not working why?
-            //console.log("error in app.js - "+this.state.err);
-            this.error(2);
-        }
-        if(this.state.auth){
-            console.log('authenticated user');
-            this.setState({logged: true});
-            //get user name and other data and populate the 'this.user'    
-            //page 2
-            //this.setState({page: 2});   
-        }
+        var fetchAction =  require('node-fetch');
+        var url = "https://data.bathtub62.hasura-app.io/v1/query";
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
+        var that = this;
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
+            }
+        };
+        var body = {
+            "type": "bulk",
+            "args": [
+                {
+                    "type": "select",
+                    "args": {
+                        "table": "Users",
+                        "columns": [
+                            "username"
+                        ],
+                        "where": {
+                            "email": {
+                                "$like": authUser.username
+                            },
+                            "password": {
+                                "$like": authUser.password
+                            },
+                        }
+                    }
+                }
+            ]
+        };
+        requestOptions.body = JSON.stringify(body);
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            console.log(result[0][0].username);
+	        that.state.auth = true;
+	        that.user.username = result[0][0].username;
+	        console.log('authenticated user');
+	        that.setCookie("username",that.user.username,1);
+	        that.setCookie("user_logged",true,1);
+	        that.setState({logged: true});
+	        //cookie.save("user_logged", true, {path: "/"});
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+            that.error(2);
+        });
+        //this.setState({page: 2});   
     };
-    logout(){       this.setState({logged: false, signupLogin: 1});     };
+    logout(){
+    	this.setCookie("username","",0);
+    	this.setCookie("user_logged",false,0);
+    	this.setState({logged: false, signupLogin: 1});     
+    };
 
     addBill = (billDetails) => {
         console.log(billDetails);
@@ -117,7 +206,28 @@ class App extends Component{
             
         }
     };
-    
+
+    setCookie = (cname, cvalue, exdays) => {
+	    var d = new Date();
+	    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	    var expires = "expires="+d.toUTCString();
+	    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	};
+	getCookie = (cname) => {
+	    var name = cname + "=";
+	    var ca = document.cookie.split(';');
+	    for(var i = 0; i < ca.length; i++) {
+	        var c = ca[i];
+	        while (c.charAt(0) == ' ') {
+	            c = c.substring(1);
+	        }
+	        if (c.indexOf(name) == 0) {
+	            return c.substring(name.length, c.length);
+	        }
+	    }
+	    return "";
+	};
+
     render(){
         return(
             <div className="App">
