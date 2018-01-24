@@ -12,6 +12,9 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
         this.user  =    { username: '', avatar: ''};
 
@@ -119,7 +122,6 @@ class App extends Component{
         // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
         // headers = { "Authorization" : "Bearer " + authToken }
         var that = this;
-        var tmpUserName = "";
         var requestOptions = {
             "method": "POST",
             "headers": {
@@ -156,28 +158,15 @@ class App extends Component{
         })
         .then(function(result) {
             console.log(result[0][0].username);
-            tmpUserName = result[0][0].username;
-            //that.user.username = result[0][0].username;
-            //console.log(that.user.username);
-            //that.setState({auth: true});
+	        that.state.auth = true;
+	        that.user.username = result[0][0].username;
+	        console.log('authenticated user');
+	        that.setState({logged: true});
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
             that.error(2);
         });
-        
-        setTimeout(function(){
-            if(tmpUserName){
-                that.state.auth = true;
-                that.user.username = tmpUserName;
-                console.log('authenticated user');
-                that.setState({logged: true});
-            }
-            else{
-                that.error(2);
-            }
-        }, 5000);
-        
         //this.setState({page: 2});   
     };
     logout(){       this.setState({logged: false, signupLogin: 1});     };
