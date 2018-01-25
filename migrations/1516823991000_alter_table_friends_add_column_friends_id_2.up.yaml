@@ -1,3 +1,0 @@
-- args:
-    sql: ALTER TABLE "friends" ADD COLUMN "friends_id_2" integer NUll
-  type: run_sql
