@@ -1,4 +1,0 @@
-- args:
-    sql: ALTER TABLE "friends" ADD FOREIGN KEY ("friends_id_1") REFERENCES "Users"
-      ("user_id")
-  type: run_sql
