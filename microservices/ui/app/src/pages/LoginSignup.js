@@ -11,14 +11,17 @@ class LoginSignup extends Component{
         super();
         this.newUser  = {username:'', email:'', password:''};
         this.authUser = {email:'', password:''};
+        //this.authUser = {username:'', email:'', password:''};
     }
     signupUsername(evt) {   this.newUser.username = evt.target.value;   };
     signupEmail(evt)    {   this.newUser.email    = evt.target.value;   };
     signupPassword(evt) {   this.newUser.password = evt.target.value;   };
     
-    copyCredentials()   {   this.authUser.email   = this.newUser.email; 
+    copyCredentials()   {   //this.authUser.username= this.newUser.username;
+                            this.authUser.email   = this.newUser.email; 
                             this.authUser.password= this.newUser.password;
                         };
+    //loginUsername(evt)  {   this.authUser.username= evt.target.value;   };
     loginEmail(evt)     {   this.authUser.email   = evt.target.value;   };
     loginPassword(evt)  {   this.authUser.password= evt.target.value;   };
     

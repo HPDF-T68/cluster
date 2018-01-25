@@ -18,10 +18,13 @@ class AddFriendDialog extends Component{
           	);
 		}
 		this.state={users:users, modalOpen:this.props.click, selectedUsers:[]};
+		//this.props.click
 		this.newFriends=[];
 	};
 	componentWillReceiveProps(nextProps){
-		this.setState({modalOpen: true});
+		if(nextProps.click===2){
+			this.setState({modalOpen: true});
+		}
 	};
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){
@@ -42,17 +45,22 @@ class AddFriendDialog extends Component{
   	};
 
 	render(){
-		const actions = [	<FlatButton	label="Cancel"	primary={true}	onClick={this.handleClose} 	/>,
-      						<FlatButton	label="Done"	primary={true}	onClick={this.addDone.bind(this)}	/>
+		const actions = [	<FlatButton	label="Cancel"	onClick={this.handleClose} 	
+							labelStyle={Styles.dasboardFlatLabel} 				style={Styles.flatModalCancel}
+							backgroundColor='#ff4e00' 	hoverColor='#ff9d00' 	rippleColor='#efefef' />,
+      						<FlatButton	label="Done"	onClick={this.addDone.bind(this)}	
+      						labelStyle={Styles.dasboardFlatLabel}				style={Styles.flatModalDone}
+		                    backgroundColor='#08ce00' 	hoverColor='#64dd17' 	rippleColor='#efefef' labelStyle={Styles.dasboardFlatLabel}				style={Styles.flatModalDone}
+		                    backgroundColor='#08ce00' 	hoverColor='#64dd17' 	rippleColor='#efefef' />
       					];
 		return(
 			<Dialog		title="Add new friends"	modal={true}	autoScrollBodyContent={true}  
 						actions={actions}					open={this.state.modalOpen}
-						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addBillBody}
+						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addOtherBody}
 						contentStyle={Styles.addBillContent}>
 				<div>
-						<span>The existing friends will be ignored</span>
-						<Divider />
+						<span>Existing friends will be ignored</span>
+						<Divider style={Styles.modalDivider} />
 						<div>{this.state.users}</div>
 				</div>
 			</Dialog>
