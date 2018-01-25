@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "friends" ALTER COLUMN "friends_id_1" TYPE integer;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "friends" ALTER COLUMN "friends_id_1" DROP DEFAULT;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "friends" ALTER COLUMN "friends_id_1" DROP NOT NULL;
+  type: run_sql
