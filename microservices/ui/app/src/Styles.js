@@ -39,6 +39,7 @@ const Styles = {
     dashboardMenuList:{display: 'inline-block', float: 'left', margin: '10px 0px 16px 0px'},
     menuDisabled:   {backgroundColor:'#EAEAEAFF',padding:'0px 10px', color:'#969696FF', border:'0px 0px 1px 0px red'},
     menuNav:        {color:'#6C6C6CFF'},
+    menuNavSelected:{color:'#51b216'},
     account:        {lineHeight:'25px', color:muiTheme.palette.currency},
 
     listTimestamp:  {marginTop:-6, color:muiTheme.palette.primaryHeaderColor},
@@ -56,10 +57,17 @@ const Styles = {
     listLentAmt:    {fontWeight:'bold', color:'#f44b06',lineHeight:'20px'},
     listDivider:    {'marginTop':'0px'},
 
-    addBillTitle:   {padding:'6px 24px', textAlign:'left', fontSize:'samll',
+    addBillTitle:   {padding:'6px 24px', textAlign:'left', fontSize:'samll', fontWeight:600,
                      backgroundColor:muiTheme.palette.baseDark, color:muiTheme.palette.primaryTextColor},
     addBillContent: {width:'fit-content', maxWidth: 'none'},
-    addBillBody:    {padding:'5px 0px 5px 0px'},
+    addBillBody:    {padding:'10px 20px 5px 20px',minHeight:300},
+    addOtherBody:    {padding:'10px 20px 5px 20px'},
+    groupLabel:     {width:'max-content',marginTop:14},
+    groupOption:    {width:'max-content',marginTop:-10},
+
+    flatModalCancel:{borderRadius:5, marginTop:5, border:'1px solid #de0000',marginRight:10},
+    flatModalDone:  {borderRadius:5, marginTop:5, border:'1px solid #06b11a',marginRight:5},
+    modalDivider:   {marginTop:'10px',marginBottom:'10px',marginLeft:'-5px',marginRight:'-5px'},
 };
-//    padding: 10px 30px 10px;
+//  width: fit-content; margin: auto;
 export default Styles;

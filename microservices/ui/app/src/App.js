@@ -202,9 +202,6 @@ class App extends Component{
         if(groupMembers.length <= 0){
             this.error(4);
         }
-        else{
-            
-        }
     };
 
     setCookie = (cname, cvalue, exdays) => {
@@ -287,7 +284,7 @@ class App extends Component{
                         ?
                             <Snackbar
                                 open={this.state.errorOpen}
-                                message="Group discarded because of zero friends"
+                                message="You cannot form group without adding friends"
                                 action="ok"
                                 autoHideDuration={5000}
                                 onActionClick={this.handleError1Click.bind(this)}

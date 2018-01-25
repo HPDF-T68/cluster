@@ -1,21 +1,33 @@
-//-------API Code for signup--------//
-
 var fetchAction =  require('fetch');
 
-var url = "https://auth.athletics15.hasura-app.io/v1/signup";
+var url = "https://data.bathtub62.hasura-app.io/v1/query";
 
+// If you have the auth token saved in offline storage
+// var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+// headers = { "Authorization" : "Bearer " + authToken }
 var requestOptions = {
     "method": "POST",
     "headers": {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
     }
 };
 
 var body = {
-    "provider": "email",
-    "data": {
-        "email": "someemail@something.com",
-        "password": "somePassword"
+    "type": "insert",
+    "args": {
+        "table": "Users",
+        "objects": [
+            {
+                "user_owes": "0",
+                "user_owed": "0",
+                "user_id": "1",
+                "username": "neha tiwari",
+                "email": "nehatiwari.csk@gmail.com",
+                "password": "neha1234",
+                "total_balance": "0"
+            }
+        ]
     }
 };
 
@@ -23,14 +35,11 @@ requestOptions.body = JSON.stringify(body);
 
 fetchAction(url, requestOptions)
 .then(function(response) {
-	return response.json();
+    return response.json();
 })
 .then(function(result) {
-	console.log(result);
-	// To save the auth token received to offline storage
-	// var authToken = result.auth_token
-	// window.localStorage.setItem('HASURA_AUTH_TOKEN', authToken);
+    console.log(result);
 })
 .catch(function(error) {
-	console.log('Request Failed:' + error);
+    console.log('Request Failed:' + error);
 });

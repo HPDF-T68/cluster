@@ -26,25 +26,25 @@ class DashboardMenu extends Component{
 				name: this.props.groups[gKeys[j]]
 			})
 		}
-		this.state = {friends:friends, groups:groups, modalAddFriend:false, modalAddGroup:false};
+		this.state = {friends:friends, groups:groups, modalOpen: 0};
 	}
 	addFriend (){
-		this.setState({ modalAddFriend: true, modalAddGroup:false});
-		console.log("f | "+this.state.modalAddFriend+" "+this.state.modalAddGroup);
+		this.setState({modalOpen:2}, function(){console.log("modal "+this.state.modalOpen);});
 	};
 	addGroup (){
-		this.setState({ modalAddGroup: true, modalAddFriend:false});
-		console.log("g | "+this.state.modalAddFriend+" "+this.state.modalAddGroup);
+		this.setState({modalOpen:1}, function(){console.log("modal "+this.state.modalOpen);});
 	};
 	render(){
 		return(
 			<div style={Styles.dashboardMenuList}>
-					<AddFriendDialog 	click={this.state.modalAddFriend}	users={this.props.users}
-		       						addFriends={this.props.addFriends} />
-					<AddGroupDialog 	click={this.state.modalAddGroup}	friends={this.props.friends}
-		       						addGroup={this.props.addGroup} />
+					<AddFriendDialog 	click={this.state.modalOpen}	users={this.props.users}
+		       						addFriends={this.props.addFriends} 	/>
+					<AddGroupDialog 	click={this.state.modalOpen}	friends={this.props.friends}
+		       						addGroup={this.props.addGroup} 		/>
 		      	<Menu desktop={true} width={150} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
-			        <MenuItem leftIcon={<i className="material-icons">dashboard</i>} primaryText="Dashboard" innerDivStyle={Styles.menuNav}/>
+			        <MenuItem 	leftIcon={<i className="material-icons">dashboard</i>}
+			        			style={{marginLeft:'-7px',borderLeft:'7px solid #51b216'}}
+			        			primaryText="Dashboard" innerDivStyle={Styles.menuNavSelected}/>
 			        <MenuItem leftIcon={<i className="material-icons">flag</i>} primaryText="Recent activity" innerDivStyle={Styles.menuNav}/>
 			        <MenuItem leftIcon={<i className="material-icons">list</i>} primaryText="All expenses" innerDivStyle={Styles.menuNav}/>
 			        <br />

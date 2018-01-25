@@ -19,11 +19,14 @@ class AddGroupDialog extends Component{
           	);
 		}
 		this.state={friends:friends, modalOpen:this.props.click, groupName:"new group", selectedFriends:[]};
+		//modalOpen:this.props.click
 		this.groupName="";
 		this.groupMembers=[];
 	};
 	componentWillReceiveProps(nextProps){
-		this.setState({modalOpen: true});
+		if(nextProps.click===1){
+			this.setState({modalOpen: true});
+		}
 	};
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){
@@ -42,27 +45,23 @@ class AddGroupDialog extends Component{
 	addDone = () => {
 		this.groupName = this.state.groupName;
 		this.groupMembers = this.state.selectedFriends;
-		if(this.groupMembers.length <= 0){
-			//console.log("You need to select atlest one friend");
-			this.setState({modalOpen: false});
-	    	this.props.addGroup(this.groupName,this.groupMembers);
-	    	this.state.selectedFriends=[];
-		}
-		else{
-	    	this.setState({modalOpen: false});
-	    	this.props.addGroup(this.groupName,this.groupMembers);
-	    	this.state.selectedFriends=[];	
-		}
+		this.setState({modalOpen: false});
+	    this.props.addGroup(this.groupName,this.groupMembers);
+	    this.state.selectedFriends=[];	
   	};
 
 	render(){
-		const actions = [	<FlatButton	label="Cancel"	primary={true}	onClick={this.handleClose} 	/>,
-      						<FlatButton	label="Done"	primary={true}	onClick={this.addDone.bind(this)}	/>
+		const actions = [	<FlatButton	label="Cancel"	onClick={this.handleClose}
+							labelStyle={Styles.dasboardFlatLabel} 				style={Styles.flatModalCancel}
+							backgroundColor='#ff4e00' 	hoverColor='#ff9d00' 	rippleColor='#efefef' />,
+      						<FlatButton	label="Done"	onClick={this.addDone.bind(this)}	
+							labelStyle={Styles.dasboardFlatLabel}				style={Styles.flatModalDone}
+		                    backgroundColor='#08ce00' 	hoverColor='#64dd17' 	rippleColor='#efefef' />
       					];
 		return(
 			<Dialog		title="Create a new group"	modal={true}	autoScrollBodyContent={true}  
 						actions={actions}					open={this.state.modalOpen}
-						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addBillBody}
+						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addOtherBody}
 						contentStyle={Styles.addBillContent}>
 				<div>
 					<TextField	defaultValue="new group"	floatingLabelText="Enter a group name"

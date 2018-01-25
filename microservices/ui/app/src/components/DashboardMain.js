@@ -25,6 +25,7 @@ class DashboardMain extends Component{
 	}
 	addBill(){
 		this.setState({ modalAddBill: true});
+		//console.log(this.state.modalAddBill);
 	}
 	render(){
 		return(
