@@ -11,12 +11,33 @@ import MenuItem from 'material-ui/MenuItem';
 
 
 class CurrentUser extends Component{
-    constructor(){
-        super();
-        this.state = { open: false};
+    constructor(props){
+        super(props);
+        this.state = { open: false, avatar:""};
+        this.randomAvatar.bind(this);
+        this.randomAvatar();
     }
     logout(){
         this.props.toggle();
+    }
+    randomAvatar(){
+        var rand = ((this.props.username).length)%5;
+        //console.log("rand :"+rand);
+        switch(rand){
+            case 0: this.state.avatar = "images/avatar_0.png";
+                    break;
+            case 1: this.state.avatar = "images/avatar_1.png";
+                    break;
+            case 2: this.state.avatar = "images/avatar_2.png";
+                    break;
+            case 3: this.state.avatar = "images/avatar_3.png";
+                    break;
+            case 4: this.state.avatar = "images/avatar_4.png";
+                    break;
+            default:
+                    break;
+        }
+        //console.log(this.state.avatar);
     }
     popover = (event) => {
         event.preventDefault();
@@ -36,7 +57,7 @@ class CurrentUser extends Component{
                         label={ <span style={{color: muiTheme.palette.primaryTextColor}}>{this.props.username}&nbsp;
                                 <i style={{verticalAlign:'middle'}} className="material-icons">arrow_drop_down</i>
                             </span>}
-                        icon={<Avatar src="images/avatar1.png" size={30} />} />
+                        icon={<Avatar src={this.state.avatar} size={30} />} />
                         <Popover   
                             open={this.state.open} onRequestClose={this.handleRequestClose}
                             anchorEl={this.state.anchorEl} animation={PopoverAnimationVertical}

@@ -39,8 +39,13 @@ class App extends Component{
         this.getCookie.bind(this);
     }
     componentWillMount(){
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
+        //that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
 		var userCookie   = this.getCookie("username");
 		var loggedCookie = this.getCookie("user_logged");
+        var userAuth_token = this.getCookie("HASURA_AUTH_TOKEN");
 		if(loggedCookie){
 			this.setState({logged:true});
 			//that.state.auth = true;
@@ -71,22 +76,27 @@ class App extends Component{
     };
     handleError2Click = () => {
         this.setState({errorOpen: false});
-        alert('Forgotten Password : This functionality is still in development');
+        alert('Re-type : both username and password manually');
     };
     handleErrorRequestClose = () => {
         this.setState({errorOpen: false});
     };
+//--------- API CALLS SIGNUP
     signup = (newUser) => {
-        console.log(newUser);
+        //console.log(newUser);
         if((newUser.username==='')||(newUser.email==='')||(newUser.password==='')){
             this.error(3);
+        }
+        else if((newUser.password).length < 8){
+            this.error(5);
         }
         else if(!this.ValidateEmail(newUser.email)){
             this.error(1);
         }
         else{
             var fetchAction =  require('node-fetch');
-            var url = "https://data.bathtub62.hasura-app.io/v1/query";
+            var url = "https://auth.bathtub62.hasura-app.io/v1/signup";
+            var res_username,res_username1,res_role, res_password,res_password1, res_id, res_e;
             var requestOptions = {
                 "method": "POST",
                 "headers": {
@@ -94,19 +104,10 @@ class App extends Component{
                 }
             };
             var body = {
-                "type": "insert",
-                "args": {
-                    "table": "Users",
-                    "objects": [
-                        {
-                            "user_owes": "0",
-                            "user_owed": "0",
-                            "username": newUser.username,
-                            "email": newUser.email,
-                            "password": newUser.password,
-                            "total_balance": "0"
-                        }
-                    ]
+                "provider": "username",
+                "data": {
+                    "username": newUser.username,
+                    "password": newUser.password
                 }
             };
             requestOptions.body = JSON.stringify(body);
@@ -116,52 +117,85 @@ class App extends Component{
             })
             .then(function(result) {
                 console.log(result);
+                //console.log(JSON.stringify(result.hasura_id));
+                res_username1= JSON.stringify(result.username);
+                res_username= res_username1.substring(1,res_username1.length-1);
+                res_password1= JSON.stringify(body.data.password);
+                res_password= res_password1.substring(1,res_password1.length-1);
+               
+                res_id= JSON.stringify(result.hasura_id);
+                res_role=JSON.stringify(result.hasura_roles[0]).substring(1,JSON.stringify(result.hasura_roles[0]).length-1);
+            })
+            .then(function(result)
+            {
+                var fetchAction =  require('node-fetch');
+                //var obj = result;
+                var url = "https://data.bathtub62.hasura-app.io/v1/query";
+                var requestOptions = {
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    }
+                };
+                //console.log("role= "+ res_role);
+                var body = {
+                    "type": "insert",
+                    "args": {
+                        "table": "users",
+                        "objects": [
+                            {
+                                "email": newUser.email,
+                                "password": res_password,
+                                "avatar": null,
+                                "user_id": res_id,
+                                "total_balance": "0",
+                                "user_owes": "0",
+                                "user_owed": "0",
+                                "username": res_username,
+                                "role": res_role
+                            }
+                        ]
+                    }
+                };
+                requestOptions.body = JSON.stringify(body);
+                fetchAction(url, requestOptions)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(result) {
+                    console.log(JSON.stringify(result));
+                })
+                .catch(function(error) {
+                    console.log('Request Failed:' + error);
+                });
             })
             .catch(function(error) {
                 console.log('Request Failed:' + error);
             });
             console.log('saved new-user credentials');
             //goto login page (values are already copied)
-            this.setState({signupLogin: 1});   
+            this.setState({signupLogin: 1});
         }
     };
-
+//-------- end up sign up
+//-------- API CALL LOGIN
     login = (authUser) => {        
         console.log(authUser);
-        var fetchAction =  require('node-fetch');
-        var url = "https://data.bathtub62.hasura-app.io/v1/query";
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
         var that = this;
+        var fetchAction =  require('node-fetch');
+        var url = "https://auth.bathtub62.hasura-app.io/v1/login";
         var requestOptions = {
             "method": "POST",
             "headers": {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
+                "Content-Type": "application/json"
             }
         };
         var body = {
-            "type": "bulk",
-            "args": [
-                {
-                    "type": "select",
-                    "args": {
-                        "table": "Users",
-                        "columns": [
-                            "username"
-                        ],
-                        "where": {
-                            "email": {
-                                "$like": authUser.username
-                            },
-                            "password": {
-                                "$like": authUser.password
-                            },
-                        }
-                    }
-                }
-            ]
+            "provider": "username",
+            "data": {
+                "username": authUser.username,
+                "password": authUser.password
+            }
         };
         requestOptions.body = JSON.stringify(body);
         fetchAction(url, requestOptions)
@@ -169,26 +203,58 @@ class App extends Component{
             return response.json();
         })
         .then(function(result) {
-            console.log(result[0][0].username);
-	        that.state.auth = true;
-	        that.user.username = result[0][0].username;
-	        console.log('authenticated user');
-	        that.setCookie("username",that.user.username,1);
-	        that.setCookie("user_logged",true,1);
-	        that.setState({logged: true});
-	        //cookie.save("user_logged", true, {path: "/"});
+            console.log(result);
+            if(result.code === "invalid-creds"){
+                that.error(2);
+            }
+            else{
+                that.state.auth = true;
+                that.user.username = result.username;
+                var authToken = result.auth_token;
+                //console.log('authenticated user');
+                that.setCookie("username",that.user.username,1);
+                that.setCookie("user_logged",true,1);
+                that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
+                that.setState({logged: true});
+            }
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
-            that.error(2);
         });
         //this.setState({page: 2});   
     };
+//---- end of  login
     logout(){
-    	this.setCookie("username","",0);
-    	this.setCookie("user_logged",false,0);
-    	this.setState({logged: false, signupLogin: 1});     
+        var that = this;
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+
+        var fetchAction =  require('node-fetch');
+        var url = "https://auth.bathtub62.hasura-app.io/v1/user/logout";
+        var authorization  = "Bearer ".concat(user_auth_token);
+        //console.log(authorization);
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": authorization
+            }
+        };
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            console.log(result);
+            that.setCookie("username","",0);
+            that.setCookie("user_logged",false,0);
+            that.setCookie("HASURA_AUTH_TOKEN",null,0);
+            that.setState({logged: false, signupLogin: 1}); 
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+        });  
     };
+//----------   end of logout
 
     addBill = (billDetails) => {
         console.log(billDetails);
@@ -259,8 +325,8 @@ class App extends Component{
                         ?
                             <Snackbar
                                 open={this.state.errorOpen}
-                                message="Whoops! We couldn’t find an account for that email address and password."
-                                action="Resolve"
+                                message="Whoops! We couldn’t find an account for that username/password."
+                                action="Re-type"
                                 autoHideDuration={5000}
                                 onActionClick={this.handleError2Click.bind(this)}
                                 onRequestClose={this.handleErrorRequestClose.bind(this)}
@@ -279,12 +345,23 @@ class App extends Component{
                             />
                         :   <span></span>
                         }
-
                         {(this.state.err===4)
                         ?
                             <Snackbar
                                 open={this.state.errorOpen}
                                 message="You cannot form group without adding friends"
+                                action="ok"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+                        {(this.state.err===5)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Password must be at lest 9 characters long"
                                 action="ok"
                                 autoHideDuration={5000}
                                 onActionClick={this.handleError1Click.bind(this)}

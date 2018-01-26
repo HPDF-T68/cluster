@@ -10,19 +10,19 @@ class LoginSignup extends Component{
     constructor(){
         super();
         this.newUser  = {username:'', email:'', password:''};
-        this.authUser = {email:'', password:''};
-        //this.authUser = {username:'', email:'', password:''};
+        //this.authUser = {email:'', password:''};
+        this.authUser = {username:'', password:''};
     }
     signupUsername(evt) {   this.newUser.username = evt.target.value;   };
     signupEmail(evt)    {   this.newUser.email    = evt.target.value;   };
     signupPassword(evt) {   this.newUser.password = evt.target.value;   };
     
-    copyCredentials()   {   //this.authUser.username= this.newUser.username;
-                            this.authUser.email   = this.newUser.email; 
+    copyCredentials()   {   this.authUser.username= this.newUser.username;
+                            //this.authUser.email   = this.newUser.email; 
                             this.authUser.password= this.newUser.password;
                         };
-    //loginUsername(evt)  {   this.authUser.username= evt.target.value;   };
-    loginEmail(evt)     {   this.authUser.email   = evt.target.value;   };
+    loginUsername(evt)  {   this.authUser.username= evt.target.value;   };
+    //loginEmail(evt)     {   this.authUser.email   = evt.target.value;   };
     loginPassword(evt)  {   this.authUser.password= evt.target.value;   };
     
     signup = () => {
@@ -57,9 +57,9 @@ class LoginSignup extends Component{
                 :
                     <form style={Styles.LoginSignupDiv}>
                         <h4 style={{color:muiTheme.palette.primaryHeaderColor}}>WELCOME TO SPLITWISE</h4>
-                        <h3 style={Styles.subheader}>Email address</h3>
-                        <TextField id="login-email" onChange={this.loginEmail.bind(this)}
-                            underlineShow={false} style={Styles.textFieldother} type="email" />
+                        <h3 style={Styles.subheader}>Username</h3>
+                        <TextField id="login-username" onChange={this.loginUsername.bind(this)}
+                            underlineShow={false} style={Styles.textFieldother} type="username" />
                         <h3 style={Styles.subheader}>Password</h3>
                         <TextField id="login-password" onChange={this.loginPassword.bind(this)}
                             underlineShow={false} style={Styles.textFieldother} type="password"/><br/><br/>
