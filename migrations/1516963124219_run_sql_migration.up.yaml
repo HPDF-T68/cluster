@@ -1,0 +1,3 @@
+- args:
+    sql: "ALTER TABLE author\r\nADD UNIQUE (name);"
+  type: run_sql
