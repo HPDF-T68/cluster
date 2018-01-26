@@ -1,0 +1,19 @@
+- args:
+    role: user
+    table: users
+  type: drop_select_permission
+- args:
+    permission:
+      columns:
+      - avatar
+      - email
+      - role
+      - total_balance
+      - user_id
+      - user_owed
+      - user_owes
+      - username
+      filter: {}
+    role: user
+    table: users
+  type: create_select_permission
