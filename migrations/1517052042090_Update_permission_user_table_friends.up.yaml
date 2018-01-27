@@ -1,0 +1,29 @@
+- args:
+    permission:
+      columns:
+      - user_id
+      - friend_user_id_1
+      - friend_user_id_2
+      - friend_user_id_3
+      - friend_user_id_4
+      - friend_user_id_5
+      - friend_user_id_6
+      - friend_user_id_7
+      - friend_user_id_8
+      - friend_user_id_9
+      - friend_user_id_10
+      - total_friends
+      - friend_username_1
+      - friend_username_2
+      - friend_username_3
+      - friend_username_4
+      - friend_username_5
+      - friend_username_6
+      - friend_username_7
+      - friend_username_8
+      - friend_username_9
+      - friend_username_10
+      filter: {}
+    role: user
+    table: friends
+  type: create_update_permission
