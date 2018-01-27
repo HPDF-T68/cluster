@@ -18,7 +18,7 @@
 #
 # Default permissions are admin-only
 
-hookUrl: http://filestore.hasura/v2/hooks/user-read-write
+hookUrl: http://filestore.hasura/v1/hooks/public-read-user-write
 
 # volume
 # -------
