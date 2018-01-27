@@ -1,0 +1,4 @@
+- args:
+    sql: ALTER TABLE "groups" ADD COLUMN "number_of_members" integer NUll DEFAULT
+      0
+  type: run_sql

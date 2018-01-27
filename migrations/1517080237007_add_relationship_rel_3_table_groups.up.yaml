@@ -1,0 +1,6 @@
+- args:
+    name: rel_3
+    table: groups
+    using:
+      foreign_key_constraint_on: member_username_3
+  type: create_object_relationship
