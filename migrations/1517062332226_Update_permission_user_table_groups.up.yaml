@@ -1,0 +1,12 @@
+- args:
+    permission:
+      columns:
+      - group_name
+      - member_username_1
+      - member_username_2
+      - member_username_3
+      - member_username_4
+      filter: {}
+    role: user
+    table: groups
+  type: create_update_permission
