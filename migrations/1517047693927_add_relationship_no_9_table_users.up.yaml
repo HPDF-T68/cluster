@@ -1,0 +1,8 @@
+- args:
+    name: no_9
+    table: users
+    using:
+      foreign_key_constraint_on:
+        column: friend_user_id_9
+        table: friends
+  type: create_array_relationship

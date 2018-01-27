@@ -1,0 +1,4 @@
+- args:
+    relationship: no_9
+    table: users
+  type: drop_relationship
