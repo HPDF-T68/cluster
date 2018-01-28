@@ -1,0 +1,19 @@
+- args:
+    permission:
+      columns:
+      - bill_id
+      - file
+      - lent_amount
+      - log_id
+      - for_user_id
+      - paid_amount
+      - notes
+      - paid_by_username
+      - date
+      - bill_name
+      - group_name
+      - month
+      filter: {}
+    role: anonymous
+    table: logs
+  type: create_select_permission
