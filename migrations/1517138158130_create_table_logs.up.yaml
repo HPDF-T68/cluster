@@ -1,0 +1,9 @@
+- args:
+    sql: CREATE TABLE "logs"("bill_id" integer NOT NULL, "group_name" text , "for_user_id"
+      integer , "bill_name" text , "date" integer , "month" text , "paid_by_username"
+      text , "paid_amount" numeric , "lent_amount" numeric , "notes" text , "file"
+      text , "log_id" serial NOT NULL, PRIMARY KEY ("log_id") )
+  type: run_sql
+- args:
+    name: logs
+  type: add_existing_table_or_view
