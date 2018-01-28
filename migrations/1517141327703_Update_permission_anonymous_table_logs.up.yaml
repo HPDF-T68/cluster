@@ -1,0 +1,19 @@
+- args:
+    permission:
+      columns:
+      - date
+      - paid_by_username
+      - paid_amount
+      - lent_amount
+      - notes
+      - file
+      - log_id
+      - group_name
+      - for_user_id
+      - bill_id
+      - bill_name
+      - month
+      filter: {}
+    role: anonymous
+    table: logs
+  type: create_update_permission
