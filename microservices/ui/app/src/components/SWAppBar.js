@@ -13,12 +13,26 @@ import MenuItem from 'material-ui/MenuItem';
 class CurrentUser extends Component{
     constructor(props){
         super(props);
+
         this.state = { open: false, avatar:""};
         this.randomAvatar.bind(this);
         this.randomAvatar();
     }
     logout(){
         this.props.toggle();
+    }
+    create_a_group(){
+        console.log("creating");
+
+        var value = true;
+        //console.log(this.props);
+        //this.props.createGroup(value);
+    }
+    your_account(){
+        alert("Modifying account : not allowed");
+    }
+    fairness_calculators(){
+        alert("Fairness Calculators : coming soon");
     }
     randomAvatar(){
         var rand = ((this.props.username).length)%5;
@@ -64,10 +78,11 @@ class CurrentUser extends Component{
                             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                             targetOrigin={{horizontal: 'left', vertical: 'top'}} >
                             <Menu desktop={true} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
-                                <MenuItem primaryText="Your Account" />
-                                <MenuItem primaryText="Create a group" />
-                                <MenuItem primaryText="Fairness calculators" />
-                                <MenuItem primaryText="Log out" onClick={this.props.logout} />
+                                <MenuItem primaryText="Your Account"    onClick={this.your_account.bind(this)}  />
+                                <MenuItem primaryText="Create a group"  onClick={this.create_a_group.bind(this)} />
+                                <MenuItem primaryText="Fairness calculators" 
+                                            onClick={this.fairness_calculators.bind(this)} />
+                                <MenuItem primaryText="Log out"         onClick={this.props.logout} />
                             </Menu>
                         </Popover>
                 </span>

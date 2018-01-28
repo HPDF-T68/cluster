@@ -10,14 +10,6 @@ class AddGroupDialog extends Component{
 	constructor(props){
 		super(props);
 		const friends = [];
-		var fKeys = Object.keys(this.props.friends);
-		var fLen  = fKeys.length;
-		for (let i=0; i<fLen; i++){
-  			friends.push(
-  				<Checkbox	key={i+2500}	label={this.props.friends[fKeys[i]]}	labelPosition="left"
-          					onCheck={this.updateCheck.bind(this)}		value={this.props.friends[fKeys[i]]}/>
-          	);
-		}
 		this.state={friends:friends, modalOpen:this.props.click, groupName:"new group", selectedFriends:[]};
 		//modalOpen:this.props.click
 		this.groupName="";
@@ -27,6 +19,16 @@ class AddGroupDialog extends Component{
 		if(nextProps.click===1){
 			this.setState({modalOpen: true});
 		}
+		const friends = [];
+		var fKeys = Object.keys(this.props.friends);
+		var fLen  = fKeys.length;
+		for (let i=0; i<fLen; i++){
+  			friends.push(
+  				<Checkbox	key={i+2500}	label={this.props.friends[fKeys[i]]}	labelPosition="left"
+          					onCheck={this.updateCheck.bind(this)}		value={this.props.friends[fKeys[i]]}/>
+          	);
+		}
+		this.setState({friends:friends});
 	};
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){
@@ -45,7 +47,7 @@ class AddGroupDialog extends Component{
 	addDone = () => {
 		this.groupName = this.state.groupName;
 		this.groupMembers = this.state.selectedFriends;
-		this.setState({modalOpen: false});
+		//this.setState({modalOpen: false});
 	    this.props.addGroup(this.groupName,this.groupMembers);
 	    this.state.selectedFriends=[];	
   	};
