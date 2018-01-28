@@ -1,0 +1,9 @@
+- args:
+    sql: CREATE TABLE "logss"("log_id" serial , "bill_id" serial , "for_user_id" integer
+      , "bill_name" text , "date" integer , "month" text , "group_name" text , "paid_by_username"
+      text , "paid_amount" numeric , "lent_amount" numeric , "notes" text , "file"
+      text , PRIMARY KEY ("log_id") )
+  type: run_sql
+- args:
+    name: logss
+  type: add_existing_table_or_view
