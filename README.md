@@ -1,3 +1,38 @@
+# Description
+
+•    This is a clone app of "Splitwise".
+
+•    "Splitwise" is an app that makes it easy to split bills with friends and family. It allows you to organize all your shared expenses and IOUs in one place, so that everyone can see who they owe. 
+
+•    It is a Minimum Viable Product(MVP) version of the original "Splitwise" web application. A Minimum Viable Product is the "version of a new product which allows a team to collect the maximum amount of validated learning about customers with the least effort."
+
+## Requirements
+1.    React-JS for frontend.
+
+2.    NodeJS- Express for backend.
+
+3.    Hasura Auth API.
+
+4.    Hasura Data API.
+
+5.    Hasura filestore API.
+
+6.    And other relevant resources provided by Hasura.
+
+## Salient features of the app
+
+1. Users can sign up using "username - password" based registration.
+
+2. Users can log in into their accounts, and will be authenticated with the help of "Hasura" Auth API.
+
+3. After logging in, users can select from a list of other registered users on the app and add them to their friend-list.
+
+4. Users can create groups of 3-4 members by selecting friends from their friend-list and can share/split their expenses equally with other members in the group.
+
+5. Provision of uploading an image of the bill with the help of filestore API of Hasura.
+
+6. Every logged in user is associated with a randomly generated "<auth-token>" which is unique for every login session and is used to maintain important user credentials in the Auth API.
+
 # hello-react
 
 This quickstart consists of a basic hasura project with a simple react as well as a nodejs express app running on it. Once this project is deployed on to a hasura cluster, you will have the react app running at https://ui.cluster-name.hasura-app.io and the nodejs app will run at https://api.cluster-name.hasura-app.io

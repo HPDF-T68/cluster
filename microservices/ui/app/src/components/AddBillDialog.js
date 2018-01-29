@@ -12,20 +12,32 @@ class AddBillDialog extends Component{
 	constructor(props){
 		super(props);
 		const groups = [];
+
+		this.state={groups:groups, modalOpen:this.props.click, groupName:"", 
+					billName:"new expenditure", billAmount:10.0,notes:"", tmpFilepath:""};
+		
+		this.newBill={groupName:"", billName:"", billAmount:0, billAmount:null,notes:"", tmpFilepath:""};
+	}
+	componentWillMount(){
+		const groups = [];
 		var gKeys = Object.keys(this.props.groups);
 		var gLen  = gKeys.length;
 		for (let i=0; i<gLen; i++){
   			groups.push(<MenuItem value={this.props.groups[ gKeys[i] ]} key={i+500} primaryText={this.props.groups[ gKeys[i] ]} />);
 		}
-		this.state={groups:groups, modalOpen:this.props.click, groupName:this.props.groups[gKeys[0]], 
-					billName:"new expenditure", billAmount:10.0,notes:"", tmpFilepath:""};
-		//modalOpen:this.props.click
-		this.newBill={groupName:"", billName:"", billAmount:0, billAmount:null,notes:"", tmpFilepath:""};
+		this.setState({groups:groups,groupName:this.props.groups[gKeys[0]]});
 	}
 	componentWillReceiveProps(nextProps){
 		if(nextProps.click===true){
 			this.setState({modalOpen: true});	
 		}
+		const groups = [];
+		var gKeys = Object.keys(this.props.groups);
+		var gLen  = gKeys.length;
+		for (let i=0; i<gLen; i++){
+  			groups.push(<MenuItem value={this.props.groups[ gKeys[i] ]} key={i+500} primaryText={this.props.groups[ gKeys[i] ]} />);
+		}
+		this.setState({groups:groups,groupName:this.props.groups[gKeys[0]]});
 	};
 	handleClose = () => {
     	this.setState({modalOpen: false});

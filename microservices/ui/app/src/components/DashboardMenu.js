@@ -12,6 +12,12 @@ class DashboardMenu extends Component{
 		super(props);
 		const friends = [];
 		const groups = [];
+		this.state = {friends:friends, groups:groups, modalOpen: 0};
+	};
+	componentWillMount(){
+		//console.log(this.props.friends);
+		const friends = [];
+		const groups = [];
 		var fKeys = Object.keys(this.props.friends);
 		var gKeys = Object.keys(this.props.groups);
 		var fLen = fKeys.length;
@@ -26,13 +32,35 @@ class DashboardMenu extends Component{
 				name: this.props.groups[gKeys[j]]
 			})
 		}
-		this.state = {friends:friends, groups:groups, modalOpen: 0};
+		this.setState({friends:friends, groups:groups});
 	}
+	componentWillReceiveProps(nextProps){
+		//console.log(this.props.friends);
+		const friends = [];
+		const groups = [];
+		var fKeys = Object.keys(this.props.friends);
+		var gKeys = Object.keys(this.props.groups);
+		var fLen = fKeys.length;
+		var gLen = gKeys.length;
+		for(let i=0; i<fLen; i++){
+			friends.push({
+				name: this.props.friends[fKeys[i]]
+			})
+		}
+		for(let j=0; j<gLen; j++){
+			groups.push({
+				name: this.props.groups[gKeys[j]]
+			})
+		}
+		this.setState({friends:friends, groups:groups});
+	};
 	addFriend (){
-		this.setState({modalOpen:2}, function(){console.log("modal "+this.state.modalOpen);});
+		this.setState({modalOpen:2});
+		//this.setState({modalOpen:2}, function(){console.log("modal "+this.state.modalOpen);});
 	};
 	addGroup (){
-		this.setState({modalOpen:1}, function(){console.log("modal "+this.state.modalOpen);});
+		this.setState({modalOpen:1});
+		//this.setState({modalOpen:1}, function(){console.log("modal "+this.state.modalOpen);});
 	};
 	render(){
 		return(

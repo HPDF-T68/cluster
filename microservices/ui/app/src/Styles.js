@@ -61,9 +61,9 @@ const Styles = {
                      backgroundColor:muiTheme.palette.baseDark, color:muiTheme.palette.primaryTextColor},
     addBillContent: {width:'fit-content', maxWidth: 'none'},
     addBillBody:    {padding:'10px 20px 5px 20px',minHeight:300},
-    addOtherBody:    {padding:'10px 20px 5px 20px'},
+    addOtherBody:   {padding:'10px 20px 5px 20px', minWidth:300, minHeight:200},
     groupLabel:     {width:'max-content',marginTop:14},
-    groupOption:    {width:'max-content',marginTop:-10},
+    groupOption:    {width:180,marginTop:-10},
 
     flatModalCancel:{borderRadius:5, marginTop:5, border:'1px solid #de0000',marginRight:10},
     flatModalDone:  {borderRadius:5, marginTop:5, border:'1px solid #06b11a',marginRight:5},
