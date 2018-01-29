@@ -1,0 +1,19 @@
+- args:
+    role: anonymous
+    table: groups
+  type: drop_select_permission
+- args:
+    permission:
+      columns:
+      - group_name
+      - member_username_3
+      - member_username_5
+      - number_of_members
+      - group_id
+      - member_username_4
+      - member_username_2
+      - member_username_1
+      filter: {}
+    role: anonymous
+    table: groups
+  type: create_select_permission
