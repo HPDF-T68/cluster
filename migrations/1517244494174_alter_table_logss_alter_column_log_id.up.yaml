@@ -1,9 +1,0 @@
-- args:
-    sql: ALTER TABLE "logss" ALTER COLUMN "log_id" TYPE serial;
-  type: run_sql
-- args:
-    sql: ALTER TABLE "logss" ALTER COLUMN "log_id" DROP DEFAULT;
-  type: run_sql
-- args:
-    sql: ALTER TABLE "logss" ALTER COLUMN "log_id" SET NOT NULL;
-  type: run_sql

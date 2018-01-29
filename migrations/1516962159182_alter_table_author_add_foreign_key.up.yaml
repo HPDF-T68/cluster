@@ -1,0 +1,3 @@
+- args:
+    sql: ALTER TABLE "author" ADD FOREIGN KEY ("name") REFERENCES "article" ("author_id")
+  type: run_sql
