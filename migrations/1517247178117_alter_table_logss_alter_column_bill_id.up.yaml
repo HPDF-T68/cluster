@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "logss" ALTER COLUMN "bill_id" TYPE bigint;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "logss" ALTER COLUMN "bill_id" DROP DEFAULT;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "logss" ALTER COLUMN "bill_id" SET NOT NULL;
+  type: run_sql
