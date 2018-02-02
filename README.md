@@ -31,7 +31,7 @@
 
 5. Provision of uploading an image of the bill with the help of filestore API of Hasura.
 
-6. Every logged in user is associated with a randomly generated "<auth-token>" which is unique for every login session and is used to maintain important user credentials in the Auth API.
+6. Every logged in user is associated with a randomly generated "auth-token" which is unique for every login session and is used to maintain important user credentials in the Auth API.
 
 # hello-react
 
