@@ -1,0 +1,4 @@
+- args:
+    relationship: rel_2
+    table: groups
+  type: drop_relationship
