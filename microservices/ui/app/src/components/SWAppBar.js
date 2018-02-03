@@ -21,12 +21,8 @@ class CurrentUser extends Component{
     logout(){
         this.props.toggle();
     }
-    create_a_group(){
-        console.log("creating");
-
-        var value = true;
-        //console.log(this.props);
-        //this.props.createGroup(value);
+    openLink(){
+        window.open("https://github.com/rounakpolley/", "_blank");
     }
     your_account(){
         alert("Modifying account : not allowed");
@@ -79,7 +75,7 @@ class CurrentUser extends Component{
                             targetOrigin={{horizontal: 'left', vertical: 'top'}} >
                             <Menu desktop={true} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
                                 <MenuItem primaryText="Your Account"    onClick={this.your_account.bind(this)}  />
-                                <MenuItem primaryText="Create a group"  onClick={this.create_a_group.bind(this)} />
+                                <MenuItem primaryText="Explore"         onClick={this.openLink.bind(this)} />
                                 <MenuItem primaryText="Fairness calculators" 
                                             onClick={this.fairness_calculators.bind(this)} />
                                 <MenuItem primaryText="Log out"         onClick={this.props.logout} />

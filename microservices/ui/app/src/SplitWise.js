@@ -7,11 +7,8 @@ class SplitWise extends Component{
     constructor(props){
         super(props);
         this.state = {createGroupShow:false};
-        this.createGroup = this.createGroup.bind(this);
     }
-    createGroup(value) {
-        this.setState({createGroupShow: value}, function(){console.log(this.state.createGroupShow);});
-    }
+    
     render(){
         return(
             <div>
@@ -21,7 +18,6 @@ class SplitWise extends Component{
                     signup={this.props.signup}              login={this.props.login}                
                     logged={this.props.logged}              username={this.props.username}
                     logout={this.props.logout}
-                    createGroup={this.createGroup}
                 />
                 {this.props.logged
                 ?

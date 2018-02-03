@@ -7,8 +7,7 @@ import Subheader from 'material-ui/Subheader';
 import MenuItem from 'material-ui/MenuItem';
 
 import Menu from 'material-ui/Menu';
-//<i class="material-icons">description</i>
-//<i class="material-icons">bookmark_border</i>
+
 class DetailsList extends Component{
 	render(){
 		return(

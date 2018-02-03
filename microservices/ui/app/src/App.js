@@ -12,19 +12,12 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        var usersList = {};
-        var friendList = {};
-        var groupsList = {};
-        
-        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
-
-        this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
-        
-        //this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
-        //this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
-        //this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
-
-        this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
+        var usersList 	= {};
+        var friendList 	= {};
+        var groupsList 	= {};
+        var log 		= {};
+        /*
+        var log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                           2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
                             'paidBy':'friend 1',paid:84,'lentBy':'friend 2','lent':42},
@@ -33,20 +26,27 @@ class App extends Component{
                           4:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                         };
+        */
+        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
+        this.account =  { totalBalance: null, youOwe: null, youAreOwed: null};
 
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false,
-                          users:usersList, friends:friendList, groups:groupsList};
+                          users:usersList, friends:friendList, groups:groupsList, log:log};
 
         this.updateFriends.bind(this);
         this.updateGroups.bind(this);
-        
+        this.updateUserAccount.bind(this);
+        this.updateUserlogs.bind(this);
+		this.insertLog.bind(this);
+		this.insertAccount.bind(this);
+
         this.error.bind(this);
         this.setCookie.bind(this);
         this.getCookie.bind(this);
         //------------
-        
         //this.componentWillMount();
     }
+    //SWcomponentWillMount()
     componentWillMount(){
         var userCookie   = this.getCookie("username");
         var loggedCookie = this.getCookie("user_logged");
@@ -63,6 +63,8 @@ class App extends Component{
     APPcomponentWillMount(){
         this.updateFriends();
         this.updateGroups();
+        this.updateUserAccount(); //get account balance of current user
+        this.updateUserlogs();    //get the logs for current user
     }
 //----------   update friends after adding new friends or on mounting    
     updateFriends(){
@@ -148,7 +150,7 @@ class App extends Component{
             console.log('Request Failed:' + error);
         });
     }
-//----------- end of update friends   
+ //----------- end of update friends   
 //----------- updating the groups in a similar way 
     updateGroups(){
         var that = this;
@@ -188,30 +190,233 @@ class App extends Component{
             // update state here
             //tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
             that.setState({groups:tmpGroupsList});
-            console.log(that.state.groups);
+            //console.log(that.state.groups);
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
         });
     }
+// end of updating groups
+//------------------ display the list of expenditures
+    updateUserlogs(){
+        var that = this;
+        var user_owes_dollar = 0;
+        var user_owed_dollar = 0;
+        var logs = {};
+        
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "select",
+		    "args": { "table": "logss",
+		        "columns":["paid_by_username","paid_amount","lent_amount","year","date","month","bill_name","notes","group_name","file"],
+		        "where": { "for_user_id": { "$eq": that.user.hasura_id }  }
+		    }
+		};		requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) {				//console.log(result);
+			//fill the logs and calculate account
+			for(let i = 0; i < result.length; i++){
+				var tmpLog = {'name':null,'group':null,'year':null,'month':null,'day':null,'paidBy':null,
+							  paid:null,'lentBy':null,'lent':null};
+
+				tmpLog['name'] 		= result[i]['bill_name'];
+				tmpLog['group'] 	= result[i]['group_name'];
+				tmpLog['year'] 		= result[i]['year'];
+				tmpLog['month'] 	= result[i]['month'];
+				tmpLog['day'] 		= result[i]['date'];
+				tmpLog['paidBy'] 	= result[i]['paid_by_username'];
+				tmpLog['paid'] 		= result[i]['paid_amount'];
+				tmpLog['lentBy'] 	= result[i]['paid_by_username'];
+				tmpLog['lent'] 		= result[i]['lent_amount'];
+
+				tmpLog['notes'] 	= result[i]['notes'];
+				tmpLog['file_path'] = result[i]['file'];
+				
+				logs[i+1]  = tmpLog;
+				if(result[i]['lent_amount'] === 0)	{ user_owed_dollar += result[i]['paid_amount']; }
+				else								{ user_owes_dollar += result[i]['lent_amount']; }
+			}
+			that.account.youOwe     = user_owes_dollar;
+ 			that.account.youAreOwed = user_owed_dollar;
+			that.setState({log:logs}, function(){console.log(that.state.log);})
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
+    }
+//----- end of update log()
+//------------------  displays the account status
+    updateUserAccount(){
+        var that = this;
+        //get only total_balance
+        var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = {
+		    "type": "select",
+		    "args": { "table": "users", "columns": [ "total_balance" ],
+		        "where": { "user_id": { "$eq": that.user.hasura_id } }
+		    }
+		};		requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) {				//console.log(result);
+			that.account.totalBalance = result[0]["total_balance"];
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
+    }
+//----- end of update account()
 //----------- end of component will mount
 
+    dateTime(){
+        var billTime = {};
+        var today = new Date();
+        var time = today.getTime();
+        var date = today.getDate();
+        var month = "";
+        var mm = today.getMonth()+1;
+        var year = today.getFullYear();
+        switch(mm){
+             case 1 :   month = "JAN";      break;
+             case 2 :   month = "FEB";      break;
+             case 3 :   month = "MAR";      break;
+             case 4 :   month = "APR";      break;
+             case 5 :   month = "MAY";      break;
+             case 6 :   month = "JUN";      break;
+             case 7 :   month = "JUL";      break;
+             case 8 :   month = "AUG";      break;
+             case 9 :   month = "SEP";      break;
+             case 10 :  month = "OCT";      break;
+             case 11 :  month = "NOV";      break;
+             case 12 :  month = "DEC";      break;
+        }
+        billTime.date = date;
+        billTime.month = month;
+        billTime.year = year;
+        billTime.time = time;
+        //console.log(billTime);
+        return (billTime);
+    }
+//  end of date time
+	
+	//--- start of inserting account
+	insertAccount(accountDetails){					console.log(accountDetails);
+		var that =  this;
+		for(let i=0; i< accountDetails['user_id_list'].length ; i++){
+			
+			var user_total_balance = 0;
+			var user_user_owes = 0;
+			var user_user_owed = 0;
+			//fetch
+			var fetchAction =  require('node-fetch');
+			var url = "https://data.bathtub62.hasura-app.io/v1/query";
+			var requestOptions = { "method": "POST", "headers": {  "Content-Type": "application/json" } };
+			var body = { "type": "select",
+			    "args": { "table": "users",
+			        "columns": [ "total_balance", "user_owed", "user_owes" ],
+			        "where": {  "user_id": {  "$eq": accountDetails['user_id_list'][i] } }
+			    }
+			};									requestOptions.body = JSON.stringify(body);
+			fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+			.then(function(result) {									//console.log(result);
+				//current user
+				if(accountDetails['user_id_list'][i] === that.user.hasura_id){
+					user_total_balance = parseFloat(result[0]["total_balance"]); //+ logDetails.insert_paid_amount;
+					user_user_owes     = parseFloat(result[0]["user_owes"]);
+					user_user_owed     = parseFloat(result[0]["user_owed"]) + accountDetails['account_paid'];
+					//update
+					var body = { "type": "update",
+					    "args": { "table": "users", "where": { "user_id": { "$eq": accountDetails['user_id_list'][i] } },
+					        "$set": {
+					            "total_balance": user_total_balance,
+					            "user_owes": user_user_owes,
+					            "user_owed": user_user_owed
+					        }
+					    }
+					};									requestOptions.body = JSON.stringify(body);
+					fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+					.then(function(result) { console.log(result); 
+						//update display for current user
+					})
+					.catch(function(error) { console.log('Request Failed:' + error); });
+				}
+				else{
+					user_total_balance = parseFloat(result[0]["total_balance"]); //- logDetails.insert_lent_amount;
+					user_user_owes     = parseFloat(result[0]["user_owes"]) + (accountDetails['account_paid'] / accountDetails['user_id_list'].length);
+					user_user_owed     = parseFloat(result[0]["user_owed"]);
+					//update
+					console.log("updating account for :"+(accountDetails['user_id_list'][i])+" "+user_total_balance+" "+user_user_owes);
+					var body = { "type": "update",
+					    "args": { "table": "users", "where": { "user_id": { "$eq": accountDetails['user_id_list'][i] } },
+					        "$set": {
+					            "total_balance": user_total_balance,
+					            "user_owes": user_user_owes,
+					            "user_owed": user_user_owed
+					        }
+					    }
+					};									requestOptions.body = JSON.stringify(body);
+					fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+					.then(function(result) { console.log(result); })
+					.catch(function(error) { console.log('Request Failed:' + error); });
+				}
+			})
+			.catch(function(error) { console.log('Request Failed:' + error); });
+		}
+	}
+    //--- end   of account insert
 
+	//--- start of inserting log
+	insertLog(logDetails){					console.log(logDetails);
+		var that =  this;
+		console.log("inserting log for :"+logDetails.insert_for_user_id);
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "insert",
+		    "args": {
+		        "table": "logss",
+		        "objects": [
+		            {
+		                "year": logDetails.insert_year,
+		                "group_name": logDetails.insert_group_name,
+		                "notes": logDetails.insert_notes,
+		                "paid_by_username": logDetails.insert_paid_by_username,
+		                "bill_id": logDetails.insert_bill_id,
+		                "date": logDetails.insert_date,
+		                "paid_amount": logDetails.insert_paid_amount,
+		                "lent_amount": logDetails.insert_lent_amount,
+		                "month": logDetails.insert_month,
+		                "for_user_id": logDetails.insert_for_user_id,
+		                "file": logDetails.insert_file,
+		                "bill_name": logDetails.insert_bill_name
+		            }
+		        ]
+		    }
+		};					requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) { 				//console.log(result);
+            that.updateUserlogs();
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
+	
+	}
+	//--- end   of log insert
+	
+	
     onTitleClick(){
-        this.setState({page:0});
-        console.log(this.state.page);
+        //this.setState({page:0});
+        //console.log(this.state.page);
+        window.open("https://github.com/rounakpolley/", "_blank");
     }
     signupPage(){   this.setState({signupLogin: 0});    }
     loginPage(){    this.setState({signupLogin: 1});    }
     
-    ValidateEmail(mail)   
-    {  
+    ValidateEmail(mail) {  
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))  {  return (true);  }   
         return (false);  
     }  
     error = (val) => {
         this.setState({ errorOpen: true});
-        this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+        //this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+        this.setState({err: val});
     };
     
     handleError1Click = () => {
@@ -292,7 +497,7 @@ class App extends Component{
                                 "password": res_password,
                                 "avatar": null,
                                 "user_id": res_id,
-                                "total_balance": "0",
+                                "total_balance": "100",
                                 "user_owes": "0",
                                 "user_owed": "0",
                                 "username": res_username,
@@ -390,8 +595,11 @@ class App extends Component{
                 that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
                 that.setCookie("hasura_id",hasura_id,1);
                 that.setState({logged: true});
+
                 that.updateFriends();//that.APPcomponentWillMount();
                 that.updateGroups();
+                //that.updateUserAccount();
+                //that.updateUserlogs();
             }
         })
         .catch(function(error) {
@@ -432,10 +640,99 @@ class App extends Component{
         });  
     };
 //----------   end of logout
+
 //----------- and new bill  and update all  logs and the user accounts
-    addBill = (billDetails) => {
-        console.log(billDetails);
+    addBill = (billDetails) => {					//console.log(billDetails);
+        var that = this;
+        var billTime = this.dateTime();
+
+        var noOfGroupMembers = 0;
+        var allMemberUsername = {};
+        var allMemberID = [];
+
+        var accountDetails = {};
+		var account_user_ids = [];
+		var account_paid = billDetails.billAmount;
+
+
+        //vars for the columns of logs
+        var logDetails = {};
+        logDetails.insert_bill_id          = billTime.time;
+        logDetails.insert_for_user_id      = null;
+        logDetails.insert_bill_name        = billDetails.billName;
+        logDetails.insert_date             = billTime.date;
+        logDetails.insert_month            = billTime.month;
+        logDetails.insert_group_name       = billDetails.groupName;
+        logDetails.insert_paid_by_username = that.user.username;
+        logDetails.insert_paid_amount      = billDetails.billAmount;
+        logDetails.insert_lent_amount      = 0;
+        logDetails.insert_notes            = billDetails.notes;
+        logDetails.insert_file             = billDetails.tmpFilepath;
+        logDetails.insert_year             = billTime.year;
+		//console.log(logDetails);
+	//get all the group member username then their corresponding ids
+		//fetch usernames
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "select",
+		    "args": { "table": "groups",
+		        "columns": [ "number_of_members", "member_username_1", "member_username_2",
+		            		 "member_username_3", "member_username_4", "member_username_5" ],
+		        "where": { "group_name": { "$eq": billDetails.groupName} }
+		    }
+		};
+		requestOptions.body = JSON.stringify(body);		fetchAction(url, requestOptions)
+		.then(function(response) { return response.json(); })
+		.then(function(result) {									//console.log(result);
+			noOfGroupMembers     = result[0]["number_of_members"];
+			allMemberUsername[1] = result[0]["member_username_1"];
+			allMemberUsername[2] = result[0]["member_username_2"];
+			allMemberUsername[3] = result[0]["member_username_3"];
+			allMemberUsername[4] = result[0]["member_username_4"];
+			allMemberUsername[5] = result[0]["member_username_5"];
+
+			//fetch ids (no need to fetch for current_user)
+			//--- start of for loop
+			for(let i=1; i<=noOfGroupMembers; i++){
+				
+				if(allMemberUsername[i] != that.user.username){				//eliminate current_user
+					var body = { "type": "select",
+					    "args": { "table": "users", "columns": [ "user_id" ],
+					        "where": { "username": { "$eq": allMemberUsername[i] } }
+					    }
+					};
+					requestOptions.body = JSON.stringify(body);		fetchAction(url, requestOptions)
+					.then(function(response) { return response.json(); })
+					.then(function(result) {							//console.log(result);
+						logDetails.insert_for_user_id = result[0]["user_id"];
+						logDetails.insert_lent_amount = ( (logDetails.insert_paid_amount) / (noOfGroupMembers) ).toFixed(2);
+                        
+						account_user_ids[i] = logDetails.insert_for_user_id;
+						//console.log(logDetails);
+						that.insertLog(logDetails);
+					})
+					.catch(function(error) {
+						console.log('Request Failed:' + error);
+					});
+				}
+			}
+			//--- end of for loop still in results of 1st api-call
+
+			// call for current_user
+				logDetails.insert_for_user_id = that.user.hasura_id;
+				logDetails.insert_lent_amount = 0;
+				that.insertLog(logDetails);
+
+				account_user_ids[0] = parseInt(that.user.hasura_id);
+				accountDetails = {'user_id_list':account_user_ids, 'account_paid':account_paid};
+			
+				//call  for ui update
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
     };
+//--- end of adding bills
+
 //----------   add new friends
     addFriends = (newFriends) => {
         var that = this;
@@ -602,8 +899,7 @@ class App extends Component{
             .then(function(response) {
                 return response.json();
             })
-            .then(function(result) {
-                console.log(result);
+            .then(function(result) {		//console.log(result);
                 //-------- next : update users append to the group_ids for current user
                 that.updateGroups();
                 that.error(1002);
@@ -652,7 +948,7 @@ class App extends Component{
                         logout={this.logout.bind(this)}             account={this.account}
                         users={this.state.users}
                         friends={this.state.friends}                groups={this.state.groups}
-                        log={this.log}                              
+                        log={this.state.log}                              
                         addBill={this.addBill.bind(this)}
                         addGroup={this.addGroup.bind(this)}         addFriends={this.addFriends.bind(this)}
                     />

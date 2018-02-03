@@ -13,6 +13,11 @@ import FlatButton from 'material-ui/FlatButton';
 class DashboardMain extends Component{
 	constructor(props){
 		super(props);
+		//console.log(this.props.log);
+		const log = [];
+		this.state = {log:log, modalAddBill:false};
+	}
+	componentWillMount(){
 		const log = [];
 		var lKeys = Object.keys(this.props.log);
 		var lLen  = lKeys.length;
@@ -21,7 +26,11 @@ class DashboardMain extends Component{
 				details: this.props.log[ lKeys[i] ]
 			})
 		}
-		this.state = {log:log, modalAddBill:false};
+		this.state = {log:log};
+		console.log(this.state.log);
+	}
+	componentWillReceiveProps(){
+		this.componentWillMount();
 	}
 	addBill(){
 		this.setState({ modalAddBill: true});
