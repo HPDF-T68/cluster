@@ -9,7 +9,7 @@ class DashboardAside extends  Component{
 	render(){
 		return(
 			<div>
-				<img style={Styles.hasuraLogo} src="/images/Hasura_HD.webp" />
+				<img style={Styles.hasuraLogo} src="/images/Hasura_HD.jpg" />
 				<div style={Styles.asideBox}>
 				<h4 style={{'margin':'10px 5px 0px 10px'}}>~ &nbsp;RULES</h4>
 					<ul>

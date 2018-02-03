@@ -54,6 +54,10 @@ class DashboardMenu extends Component{
 		}
 		this.setState({friends:friends, groups:groups});
 	};
+	componentDidMount(){
+		this.componentWillMount();
+	}
+	
 	addFriend (){
 		this.setState({modalOpen:2});
 		//this.setState({modalOpen:2}, function(){console.log("modal "+this.state.modalOpen);});

@@ -32,6 +32,10 @@ class DashboardMain extends Component{
 	componentWillReceiveProps(){
 		this.componentWillMount();
 	}
+	componentDidMount(){
+		this.componentWillMount();
+	}
+	
 	addBill(){
 		this.setState({ modalAddBill: true});
 		//console.log(this.state.modalAddBill);

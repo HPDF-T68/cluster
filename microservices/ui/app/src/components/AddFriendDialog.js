@@ -14,6 +14,18 @@ class AddFriendDialog extends Component{
 		//this.props.click
 		this.newFriends=[];
 	};
+	componentWillMount(){
+		const users = [];
+		var uKeys = Object.keys(this.props.users);
+		var uLen  = uKeys.length;
+		for (let i=0; i<uLen; i++){
+  			users.push(
+  				<Checkbox	key={i+2500}	label={this.props.users[uKeys[i]]}	labelPosition="left"
+          					onCheck={this.updateCheck.bind(this)}		value={this.props.users[uKeys[i]]}/>
+          	);
+		}
+		this.setState({users:users});
+	}
 	componentWillReceiveProps(nextProps){
 		if(nextProps.click===2){
 			this.setState({modalOpen: true});
@@ -30,6 +42,10 @@ class AddFriendDialog extends Component{
 		}
 		this.setState({users:users});
 	};
+	componentDidMount(){
+		this.componentWillMount();
+	}
+	
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){
 			this.state.selectedUsers.push(event.target.value);
