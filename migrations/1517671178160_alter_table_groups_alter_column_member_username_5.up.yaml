@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "groups" ALTER COLUMN "member_username_5" TYPE text;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "groups" ALTER COLUMN "member_username_5" DROP DEFAULT;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "groups" ALTER COLUMN "member_username_5" DROP NOT NULL;
+  type: run_sql
