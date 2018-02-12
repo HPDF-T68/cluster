@@ -1,0 +1,4 @@
+- args:
+    role: user
+    table: users
+  type: drop_select_permission

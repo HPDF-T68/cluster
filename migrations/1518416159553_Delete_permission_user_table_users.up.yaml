@@ -1,0 +1,4 @@
+- args:
+    role: user
+    table: users
+  type: drop_update_permission

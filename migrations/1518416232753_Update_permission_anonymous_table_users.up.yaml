@@ -1,0 +1,21 @@
+- args:
+    permission:
+      columns:
+      - avatar
+      - email
+      - group_id_1
+      - group_id_2
+      - group_id_3
+      - group_id_4
+      - group_id_5
+      - no_of_groups
+      - role
+      - total_balance
+      - user_id
+      - user_owed
+      - user_owes
+      - username
+      filter: {}
+    role: anonymous
+    table: users
+  type: create_select_permission
