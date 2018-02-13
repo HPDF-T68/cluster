@@ -22,7 +22,7 @@ router.route("/get_bill").get(function(req, res){
   .then(function(response) {
   	return response.blob();
   })
-  .then(function(blob) {
+  .then(function(result) {
   	console.log(result);
   })
   .catch(function(error) {
