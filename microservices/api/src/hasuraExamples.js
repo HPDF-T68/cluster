@@ -7,8 +7,8 @@ var fetchAction =  require('fetch');
 router.route("/").get(function (req, res) {
   res.send("Hello world from app-Neha")
 })
-
-router.route("/get_bill").get(function(req, res){
+/*
+.route("/get_bill").get(function(req, res){
 
 
   var url = "https://filestore.bathtub62.hasura-app.io/v1/file/11f3e127-f34f-44af-b809-7e49e45089f9";
@@ -28,7 +28,7 @@ router.route("/get_bill").get(function(req, res){
   .catch(function(error) {
   	console.log('Request Failed:' + error);
   });
-});
+});*/
 
 router.route("/get_articles").get(function (req, res) {
   //Fetch all rows from table - articles
