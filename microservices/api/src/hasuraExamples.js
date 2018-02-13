@@ -50,6 +50,7 @@ router.route("/get_bill").get(function(req, res){
   })
   .then(function(result) {
   	console.log(result);
+    res.send(result);
   })
   .catch(function(error) {
   	console.log('Request Failed:' + error);
