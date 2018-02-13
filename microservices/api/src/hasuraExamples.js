@@ -2,12 +2,12 @@ var express = require('express');
 var router = express.Router();
 var config = require('./config');
 var request = require('request');
-//var fetchAction =  require('fetch');
+var fetchAction =  require('node-fetch');
 
 router.route("/").get(function (req, res) {
   res.send("Hello world from app-Neha")
 })
-/*
+
 .route("/get_bill").get(function(req, res){
 
 
@@ -28,7 +28,7 @@ router.route("/").get(function (req, res) {
   .catch(function(error) {
   	console.log('Request Failed:' + error);
   });
-});*/
+});
 
 router.route("/get_articles").get(function (req, res) {
   //Fetch all rows from table - articles
