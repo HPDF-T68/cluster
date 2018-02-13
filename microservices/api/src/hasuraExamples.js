@@ -8,6 +8,32 @@ router.route("/").get(function (req, res) {
   res.send("Hello world from app-Neha")
 })
 
+router.route("/put_bill").get(function(req, res){
+  var url = "https://filestore.bathtub62.hasura-app.io/v1/file";
+
+  // This is the file we are going to upload, replace this with your file
+  var file = '';
+
+  var requestOptions = {
+  	method: 'POST',
+  	headers: {
+        "Authorization": "Bearer af49900a647c6452bd8215f753cdc5f1f15fd6de50c8134a"
+  	},
+  	body: file
+  }
+
+  fetchAction(url, requestOptions)
+  .then(function(response) {
+  	return response.json();
+  })
+  .then(function(result) {
+  	console.log(result);
+  })
+  .catch(function(error) {
+  	console.log('Request Failed:' + error);
+  });
+});
+
 router.route("/get_bill").get(function(req, res){
 
 
