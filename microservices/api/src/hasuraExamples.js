@@ -36,8 +36,7 @@ router.route("/put_bill").get(function(req, res){
 
 router.route("/get_bill").get(function(req, res){
 
-
-  var url = "https://filestore.bathtub62.hasura-app.io/v1/file/11f3e127-f34f-44af-b809-7e49e45089f9";
+  var url = "https://filestore.bathtub62.hasura-app.io/v1/file/898989898908879890899";
 
   var requestOptions = {
       "method": "GET",
@@ -48,13 +47,12 @@ router.route("/get_bill").get(function(req, res){
   .then(function(response) {
   	return response.blob();
   })
-  .then(function(result) {
-  	console.log(result);
-    res.send(result);
+  .then(function(blob) {
+  	//console.log(result);
+    res.send(blob);
   })
   .catch(function(error) {
   	console.log('Request Failed:' + error);
-    console.log('file problem!');
   });
 });
 
