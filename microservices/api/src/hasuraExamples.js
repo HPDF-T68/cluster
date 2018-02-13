@@ -27,6 +27,7 @@ router.route("/get_bill").get(function(req, res){
   })
   .catch(function(error) {
   	console.log('Request Failed:' + error);
+    console.log('file problem!');
   });
 });
 
