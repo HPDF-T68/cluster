@@ -8,7 +8,7 @@ router.route("/").get(function (req, res) {
   res.send("Hello world from app-Neha")
 })
 
-.route("/get_bill").get(function(req, res){
+router.route("/get_bill").get(function(req, res){
 
 
   var url = "https://filestore.bathtub62.hasura-app.io/v1/file/11f3e127-f34f-44af-b809-7e49e45089f9";
