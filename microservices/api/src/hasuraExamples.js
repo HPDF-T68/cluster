@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var config = require('./config');
-//var request = require('request');
-var fetchAction =  require('fetch');
+var request = require('request');
+//var fetchAction =  require('fetch');
 
 router.route("/").get(function (req, res) {
   res.send("Hello world from app-Neha")
