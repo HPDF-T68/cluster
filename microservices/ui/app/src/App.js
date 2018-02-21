@@ -475,16 +475,12 @@ class App extends Component{
         }
         else{
             var that = this;
-            var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
-            var authorization  = "Bearer ".concat(user_auth_token);
-
+            
             var fetchAction =  require('node-fetch');
             var url = "https://auth.bathtub62.hasura-app.io/v1/signup";
             var res_username,res_username1,res_role, res_password,res_password1, res_id, res_e;
             var requestOptions = {  "method": "POST",
-                                    "headers": {    "Content-Type": "application/json",
-                                                    "Authorization": authorization
-                                }
+                                    "headers": {    "Content-Type": "application/json"  }
             };
             var body = {
                 "provider": "username",
@@ -512,14 +508,10 @@ class App extends Component{
             .then(function(result)
             {
                 var fetchAction =  require('node-fetch');
-                var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
-                var authorization  = "Bearer ".concat(user_auth_token);
                 //var obj = result;
                 var url = "https://data.bathtub62.hasura-app.io/v1/query";
                 var requestOptions = {  "method": "POST",
-                                        "headers": {    "Content-Type": "application/json",
-                                                        "Authorization": authorization
-                                    }
+                                        "headers": {    "Content-Type": "application/json"  }
                 };
                 //console.log("role= "+ res_role);
                 var body = {
