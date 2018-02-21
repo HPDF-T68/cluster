@@ -51,12 +51,50 @@ class AddBillDialog extends Component{
 	amountChange = (event, index) => {
 		this.setState({billAmount: event.target.value});
 	};
+
 	handleFile = (event, index) => {
-		let tmpFile = event.target.files[0];
-		if(tmpFile){
-			this.setState({tmpFilepath: URL.createObjectURL(tmpFile)});
+		var that = this;
+		var tmpFile = event.target.files;
+		var tmpType = event.target.files[0]["type"];
+		var fileData = new Blob([tmpFile[0]], {type : tmpType});
+		var img_url;
+
+		function getBuffer(resolve){
+			var fr = new FileReader();
+			fr.readAsArrayBuffer(fileData);
+			fr.onload = function(){
+				var arrayBuffer=fr.result;
+				var bytes=new Uint8Array(arrayBuffer);
+				var base64String = btoa(String.fromCharCode.apply(null, bytes));
+				resolve(base64String);
+			}	
 		}
+		var promise  = new Promise(getBuffer);
+		promise.then(function(data){
+			//var arrayBuffer=fr.result;	//console.log("arrayBuffer="+ arrayBuffer);
+			//if(tmpFile){
+			var authorization  = "Bearer ".concat(that.getCookie("HASURA_AUTH_TOKEN"));
+			var fetchAction =  require('node-fetch');
+			var url = "https://filestore.bathtub62.hasura-app.io/v1/file";
+			var file = data;
+			var requestOptions = {  method: 'POST',
+									headers: {  "Authorization": authorization    },
+									body: file
+			};
+			fetchAction(url, requestOptions)
+			.then(function(response) {	return response.json();	})
+			.then(function(result) {
+				console.log('File upload sucessful!');
+				console.log(result);
+				var fileURL = tmpType + " " + "https://filestore.bathtub62.hasura-app.io/v1/file/" + result.file_id;
+				console.log(fileURL);
+				//pass to app.js to put url in logss table
+				that.setState({tmpFilepath: fileURL});
+			})
+			.catch(function(error) {	console.log('Request Failed:' + error);	});
+		})
 	};
+
 	notesChange = (event, index) => {
 		this.setState({notes: event.target.value});
 	};
@@ -71,6 +109,20 @@ class AddBillDialog extends Component{
     	this.setState({modalOpen: false});
     	this.props.addBill(this.newBill);
   	};
+	getCookie = (cname) => {
+	    var name = cname + "=";
+	    var ca = document.cookie.split(';');
+	    for(var i = 0; i < ca.length; i++) {
+	        var c = ca[i];
+	        while (c.charAt(0) == ' ') {
+	            c = c.substring(1);
+	        }
+	        if (c.indexOf(name) == 0) {
+	            return c.substring(name.length, c.length);
+	        }
+	    }
+	    return "";
+	};
 
 	render(){
 		const actions = [	<FlatButton	label="Cancel"	onClick={this.handleClose} 	

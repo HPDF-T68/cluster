@@ -17,6 +17,7 @@ class CurrentUser extends Component{
         this.state = { open: false, avatar:""};
         this.randomAvatar.bind(this);
         this.randomAvatar();
+        //this.props.chooseAvatarOpen.bind(this);
     }
     logout(){
         this.props.toggle();
@@ -25,7 +26,8 @@ class CurrentUser extends Component{
         window.open("https://github.com/rounakpolley/", "_blank");
     }
     your_account(){
-        alert("Modifying account : not allowed");
+        //alert("Modifying account : not allowed");
+        //this.props.chooseAvatarOpen();
     }
     fairness_calculators(){
         alert("Fairness Calculators : coming soon");

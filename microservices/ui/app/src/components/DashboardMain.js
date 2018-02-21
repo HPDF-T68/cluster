@@ -27,7 +27,7 @@ class DashboardMain extends Component{
 			})
 		}
 		this.state = {log:log};
-		console.log(this.state.log);
+		//console.log(this.state.log);
 	}
 	componentWillReceiveProps(){
 		this.componentWillMount();

@@ -9,7 +9,7 @@ const Styles = {
     subheader:      {color:muiTheme.palette.subHeaderColor, fontWeight:100},
     appbarAvatar:   {marginRight:130, marginTop:0, width: 300, color: muiTheme.palette.primaryTextColor},
     labelText:      {textTransform: 'none', color: muiTheme.palette.primaryTextColor },
-    LoginSignupImg: {height:200, marginLeft:420, marginTop:100, marginRight:60},
+    LoginSignupImg: {height:300, marginLeft:320, marginTop:100, marginRight:60},
     LoginSignupDiv: {marginTop:70},
 
     flatLogin:      {lineHeight: '25px', height:25, borderRadius:5, marginTop:5, border:'1px solid #06b11a'},

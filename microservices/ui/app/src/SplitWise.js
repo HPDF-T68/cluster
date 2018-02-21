@@ -6,9 +6,18 @@ import Dashboard from './pages/Dashboard.js';
 class SplitWise extends Component{
     constructor(props){
         super(props);
-        this.state = {createGroupShow:false};
+        this.state = {createGroupShow:false, chooseAvatarShow:false};
+        //this.chooseAvatarOpen.bind(this);
+        //this.chooseAvatarClose.bind(this);
     }
-    
+    chooseAvatarOpen(){
+        console.log("opening avatar");
+        this.setState({chooseAvatarShow: true});
+    }
+    chooseAvatarClose(){
+        console.log("closing avatar");
+        this.setState({chooseAvatarShow: false});
+    }
     render(){
         return(
             <div>
@@ -17,7 +26,8 @@ class SplitWise extends Component{
                     signupPage={this.props.signupPage}      loginPage={this.props.loginPage}
                     signup={this.props.signup}              login={this.props.login}                
                     logged={this.props.logged}              username={this.props.username}
-                    logout={this.props.logout}
+                    logout={this.props.logout}              
+                    chooseAvatarOpen={this.chooseAvatarOpen.bind(this)}
                 />
                 {this.props.logged
                 ?
@@ -26,7 +36,9 @@ class SplitWise extends Component{
                                 account={this.props.account}    log={this.props.log}
                                 addBill={this.props.addBill}
                                 addGroup={this.props.addGroup}  addFriends={this.props.addFriends}
-                                />
+                                setAvatar={this.props.setAvatar}
+                                chooseAvatarClose={this.chooseAvatarClose}
+                    />
                 :
                     <LoginSignup logged={this.props.logged}     signupLogin={this.props.signupLogin}
                         signupPage={this.props.signupPage}      loginPage={this.props.loginPage}

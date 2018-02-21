@@ -16,18 +16,8 @@ class App extends Component{
         var friendList 	= {};
         var groupsList 	= {};
         var log 		= {};
-        /*
-        var log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
-                            'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
-                          2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
-                            'paidBy':'friend 1',paid:84,'lentBy':'friend 2','lent':42},
-                          3:{'name':'Expense name 3','group':'group 1','year':2018,'month':'JAN','day':31,
-                            'paidBy':'friend 2',paid:55,'lentBy':'friend 2','lent':55},
-                          4:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
-                            'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
-                        };
-        */
-        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
+
+        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: 0};
         this.account =  { totalBalance: null, youOwe: null, youAreOwed: null};
 
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false,
@@ -39,6 +29,7 @@ class App extends Component{
         this.updateUserlogs.bind(this);
 		this.insertLog.bind(this);
 		this.insertAccount.bind(this);
+        this.setAvatar.bind(this);
 
         this.error.bind(this);
         this.setCookie.bind(this);
@@ -76,8 +67,14 @@ class App extends Component{
 
         //--- common for most of the calls
         var fetchAction =  require('node-fetch');
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
         var url = "https://data.bathtub62.hasura-app.io/v1/query";
-        var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+        var requestOptions = { "method": "POST", 
+                                "headers": {    "Content-Type": "application/json",
+                                                "Authorization": authorization
+                                            }
+        };
 
         var body = {
             "type": "select",
@@ -157,23 +154,28 @@ class App extends Component{
         var tmpGroupsList = {};
         //------- getting names of all  the groups an user is associated with
         var fetchAction =  require('node-fetch');
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
         var url = "https://data.bathtub62.hasura-app.io/v1/query";
         var requestOptions = {
             "method": "POST",
-            "headers": {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
+            "headers": {    "Content-Type": "application/json",
+                            "Authorization": authorization
             }
         };
-        var queryString = "SELECT group_name FROM groups WHERE member_username_1='"+that.user.username
-                            +"' OR member_username_2='"+that.user.username
-                            +"' OR member_username_3='"+that.user.username
-                            +"' OR member_username_4='"+that.user.username
-                            +"' OR member_username_5='"+that.user.username
-                            +"';";
-        var body = {
-            "type": "run_sql",
-            "args": { "sql": queryString }
+        var body = {    "type": "select",
+                        "args": {   "table": "groups",
+                                    "columns": [    "group_name"    ],
+                        "where": {
+                            "$or": [
+                                {   "member_username_1": {  "$eq": that.user.username   }   },
+                                {   "member_username_2": {  "$eq": that.user.username   }   },
+                                {   "member_username_3": {  "$eq": that.user.username   }   },
+                                {   "member_username_4": {  "$eq": that.user.username   }   },
+                                {   "member_username_5": {  "$eq": that.user.username   }   }
+                            ]
+                        }
+                    }
         };
         requestOptions.body = JSON.stringify(body);
         fetchAction(url, requestOptions)
@@ -181,11 +183,11 @@ class App extends Component{
             return response.json();
         })
         .then(function(result) {
-            //console.log(result);
-            //console.log(result.result.length-1);
-            var groups_current_user = result.result.length;//var groups_current_user = result.result.length-1;
-            for(let k=1; k < groups_current_user; k++){
-                tmpGroupsList[k] = result.result[k][0];
+            //console.log(result);                        //console.log(result.result.length-1);
+            var groups_current_user = result.length;    //var groups_current_user = result.result.length-1;
+
+            for(let k=0; k < groups_current_user; k++){
+                tmpGroupsList[k+1] = result[k]["group_name"];
             }
             // update state here
             //tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
@@ -205,8 +207,14 @@ class App extends Component{
         var logs = {};
         
 		var fetchAction =  require('node-fetch');
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
 		var url = "https://data.bathtub62.hasura-app.io/v1/query";
-		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var requestOptions = {  "method": "POST", 
+                                "headers": {    "Content-Type": "application/json",
+                                                "Authorization": authorization
+                            } 
+        };
 		var body = { "type": "select",
 		    "args": { "table": "logss",
 		        "columns":["paid_by_username","paid_amount","lent_amount","year","date","month","bill_name","notes","group_name","file"],
@@ -247,10 +255,17 @@ class App extends Component{
 //------------------  displays the account status
     updateUserAccount(){
         var that = this;
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
         //get only total_balance
         var fetchAction =  require('node-fetch');
+
 		var url = "https://data.bathtub62.hasura-app.io/v1/query";
-		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var requestOptions = { "method": "POST", 
+                                "headers": {    "Content-Type": "application/json",
+                                                "Authorization": authorization
+                                            } 
+                            };
 		var body = {
 		    "type": "select",
 		    "args": { "table": "users", "columns": [ "total_balance" ],
@@ -265,6 +280,11 @@ class App extends Component{
     }
 //----- end of update account()
 //----------- end of component will mount
+
+    setAvatar = (avatar_no) => {
+        console.log("app.js : set avatar")
+        console.log(avatar_no);
+    }
 
     dateTime(){
         var billTime = {};
@@ -300,6 +320,8 @@ class App extends Component{
 	//--- start of inserting account
 	insertAccount(accountDetails){					console.log(accountDetails);
 		var that =  this;
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
 		for(let i=0; i< accountDetails['user_id_list'].length ; i++){
 			
 			var user_total_balance = 0;
@@ -308,7 +330,11 @@ class App extends Component{
 			//fetch
 			var fetchAction =  require('node-fetch');
 			var url = "https://data.bathtub62.hasura-app.io/v1/query";
-			var requestOptions = { "method": "POST", "headers": {  "Content-Type": "application/json" } };
+			var requestOptions = { "method": "POST", 
+                                   "headers": { "Content-Type": "application/json",
+                                                "Authorization": authorization
+                                } 
+                            };
 			var body = { "type": "select",
 			    "args": { "table": "users",
 			        "columns": [ "total_balance", "user_owed", "user_owes" ],
@@ -366,10 +392,16 @@ class App extends Component{
 	//--- start of inserting log
 	insertLog(logDetails){					console.log(logDetails);
 		var that =  this;
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
 		console.log("inserting log for :"+logDetails.insert_for_user_id);
 		var fetchAction =  require('node-fetch');
 		var url = "https://data.bathtub62.hasura-app.io/v1/query";
-		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var requestOptions = { "method": "POST", 
+                               "headers": { "Content-Type": "application/json",
+                                            "Authorization": authorization
+                                            } 
+                            };
 		var body = { "type": "insert",
 		    "args": {
 		        "table": "logss",
@@ -443,14 +475,16 @@ class App extends Component{
         }
         else{
             var that = this;
+            var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+            var authorization  = "Bearer ".concat(user_auth_token);
+
             var fetchAction =  require('node-fetch');
             var url = "https://auth.bathtub62.hasura-app.io/v1/signup";
             var res_username,res_username1,res_role, res_password,res_password1, res_id, res_e;
-            var requestOptions = {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
-                }
+            var requestOptions = {  "method": "POST",
+                                    "headers": {    "Content-Type": "application/json",
+                                                    "Authorization": authorization
+                                }
             };
             var body = {
                 "provider": "username",
@@ -478,13 +512,14 @@ class App extends Component{
             .then(function(result)
             {
                 var fetchAction =  require('node-fetch');
+                var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+                var authorization  = "Bearer ".concat(user_auth_token);
                 //var obj = result;
                 var url = "https://data.bathtub62.hasura-app.io/v1/query";
-                var requestOptions = {
-                    "method": "POST",
-                    "headers": {
-                        "Content-Type": "application/json"
-                    }
+                var requestOptions = {  "method": "POST",
+                                        "headers": {    "Content-Type": "application/json",
+                                                        "Authorization": authorization
+                                    }
                 };
                 //console.log("role= "+ res_role);
                 var body = {
@@ -516,6 +551,7 @@ class App extends Component{
                     that.setState({signupLogin: 1});
                     //------- add an empty row in friends
                     var fetchAction =  require('node-fetch');
+                    
                     var url = "https://data.bathtub62.hasura-app.io/v1/query";
                     var requestOptions = {
                         "method": "POST",
@@ -610,10 +646,10 @@ class App extends Component{
 //---- end of  login
     logout(){
         var that = this;
-        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
-
         var fetchAction =  require('node-fetch');
         var url = "https://auth.bathtub62.hasura-app.io/v1/user/logout";
+
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
         var authorization  = "Bearer ".concat(user_auth_token);
         //console.log(authorization);
         var requestOptions = {
@@ -673,8 +709,14 @@ class App extends Component{
 	//get all the group member username then their corresponding ids
 		//fetch usernames
 		var fetchAction =  require('node-fetch');
+        var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var authorization  = "Bearer ".concat(user_auth_token);
 		var url = "https://data.bathtub62.hasura-app.io/v1/query";
-		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var requestOptions = {  "method": "POST", 
+                                "headers": {    "Content-Type": "application/json",
+                                                "Authorization": authorization
+                            }    
+        };
 		var body = { "type": "select",
 		    "args": { "table": "groups",
 		        "columns": [ "number_of_members", "member_username_1", "member_username_2",
@@ -746,11 +788,13 @@ class App extends Component{
         else{
             //------- step 1 : get corresponding ids of all selected users from the list of potential friends
             var fetchAction =  require('node-fetch');
+            var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+            var authorization  = "Bearer ".concat(user_auth_token);
             var url = "https://data.bathtub62.hasura-app.io/v1/query";
             var requestOptions = {
                 "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
+                "headers": {    "Content-Type": "application/json",
+                                "Authorization": authorization
                 }
             };
 
@@ -871,11 +915,13 @@ class App extends Component{
             var no_of_members = group_members.length + 1;
             
             var fetchAction =  require('node-fetch');
+            var user_auth_token = this.getCookie("HASURA_AUTH_TOKEN");
+            var authorization  = "Bearer ".concat(user_auth_token);
             var url = "https://data.bathtub62.hasura-app.io/v1/query";
             var requestOptions = {
                 "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
+                "headers": {    "Content-Type": "application/json",
+                                "Authorization": authorization
                 }
             };
             var body = {
@@ -945,8 +991,8 @@ class App extends Component{
                         signupPage={this.signupPage.bind(this)}     loginPage={this.loginPage.bind(this)}
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
-                        logout={this.logout.bind(this)}             account={this.account}
-                        users={this.state.users}
+                        logout={this.logout.bind(this)}             setAvatar={this.setAvatar}
+                        account={this.account}                      users={this.state.users}
                         friends={this.state.friends}                groups={this.state.groups}
                         log={this.state.log}                              
                         addBill={this.addBill.bind(this)}
@@ -1070,15 +1116,3 @@ class App extends Component{
 }
 
 export default App;
-
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
-        //that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
-
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
