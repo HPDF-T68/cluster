@@ -473,6 +473,7 @@ class App extends Component{
         else if(!this.ValidateEmail(newUser.email)){
             this.error(1);
         }
+        // even all inputs are in correct format
         else{
             var that = this;
             
@@ -497,13 +498,17 @@ class App extends Component{
             .then(function(result) {
                 console.log(result);
                 //console.log(JSON.stringify(result.hasura_id));
-                res_username1= JSON.stringify(result.username);
+                /*
+                res_username1= result.username;
                 res_username= res_username1.substring(1,res_username1.length-1);
-                res_password1= JSON.stringify(body.data.password);
+                res_password1= body.data.password;
                 res_password= res_password1.substring(1,res_password1.length-1);
-               
-                res_id= JSON.stringify(result.hasura_id);
-                res_role=JSON.stringify(result.hasura_roles[0]).substring(1,JSON.stringify(result.hasura_roles[0]).length-1);
+                res_role     = result[0].hasura_roles[0].substring(1,result.hasura_roles[0].length-1);
+               */
+                //res_username = result.username;
+                //res_password = result.password;
+                res_id       = result.hasura_id;
+                //res_role     = result.hasura_roles[0];
             })
             .then(function(result)
             {
@@ -521,13 +526,13 @@ class App extends Component{
                         "objects": [
                             {
                                 "email": newUser.email,
-                                "password": res_password,
+                                "password": newUser.password,
                                 "avatar": null,
                                 "user_id": res_id,
                                 "total_balance": "100",
                                 "user_owes": "0",
                                 "user_owed": "0",
-                                "username": res_username,
+                                "username": newUser.username,
                                 "role": res_role
                             }
                         ]
