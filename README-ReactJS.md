@@ -83,14 +83,14 @@ npm start
 
 ## Test your app locally
 On visiting http://localhost:3000 , you can see the default page i.e. the SignUp page.
-![2018-02-03 1](https://user-images.githubusercontent.com/30600211/35750668-c0dc7188-087b-11e8-8222-b997c2d9ee32.png)
+![preview](https://user-images.githubusercontent.com/30698500/36553818-599924d2-1823-11e8-951a-be30eb98bc6a.png)
 ### Steps to be followed
 `NOTE: Following screenshots depict the app running on a hasura cluster and not locally. `
 <br />
 To deploy your own app and explore hasura clusters , refer these [docs](https://docs.hasura.io/0.15/manual/cluster/index.html).
 >:arrow_right:Enter your credentials to SignUp/Register.
 
-![1 signup](https://user-images.githubusercontent.com/30600211/35769850-ab903a96-0937-11e8-8df7-b17dc29bf1ed.png)
+![1 signup](https://user-images.githubusercontent.com/30698500/36553820-5a10a2aa-1823-11e8-85c9-eb38ade84fb9.png)
 
 
 
@@ -98,7 +98,7 @@ To deploy your own app and explore hasura clusters , refer these [docs](https://
 
 >:arrow_right:After sucessful registration you will be redirected to the login page, here you are expected to enter your valid credentials. The authentication of the users is handled by making API call to [Hasura Auth API]( https://hasura.io/hub/project/hasura/auth-api-quickstart).
 
-![2 login](https://user-images.githubusercontent.com/30600211/35769854-b1039c98-0937-11e8-8c4e-15ab148db2ab.png)
+![2 login](https://user-images.githubusercontent.com/30698500/36553824-5b00bdbc-1823-11e8-883b-5f0a75da4b9b.png)
 
 :arrow_right:Here is your dashboard. You can view your profile details on right-top corner of this web page. All kinds of management i.e. adding friends to your friend-list from existing users of the app and forming new groups by selecting members of the group from your friend-list are done on the dashboard itself.
 
